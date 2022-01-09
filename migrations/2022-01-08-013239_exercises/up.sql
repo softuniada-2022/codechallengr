@@ -2,8 +2,9 @@
 
 CREATE TABLE exercises (
   ex_id SERIAL PRIMARY KEY,
-  t_name VARCHAR(255) NOT NULL,
-  t_description TEXT NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+  ex_name VARCHAR(255) NOT NULL,
+  ex_description TEXT NOT NULL,
+  ex_answer TEXT NOT NULL,
+  ex_created_at DATETIME NOT NULL DEFAULT NOW(),
+  ex_updated_at DATETIME NOT NULL DEFAULT NOW()
 );

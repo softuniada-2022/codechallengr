@@ -1,10 +1,11 @@
 table! {
     exercises (ex_id) {
         ex_id -> Unsigned<Bigint>,
-        t_name -> Varchar,
-        t_description -> Text,
-        created_at -> Timestamp,
-        updated_at -> Timestamp,
+        ex_name -> Varchar,
+        ex_description -> Text,
+        ex_answer -> Text,
+        ex_created_at -> Datetime,
+        ex_updated_at -> Datetime,
     }
 }
 
@@ -13,7 +14,7 @@ table! {
         s_id -> Unsigned<Bigint>,
         ex_id -> Integer,
         u_id -> Integer,
-        submitted_at -> Timestamp,
+        submitted_at -> Datetime,
     }
 }
 
@@ -21,10 +22,10 @@ table! {
     users (u_id) {
         u_id -> Unsigned<Bigint>,
         u_name -> Varchar,
-        email -> Varchar,
+        u_email -> Varchar,
         u_password -> Varchar,
-        created_at -> Timestamp,
-        updated_at -> Timestamp,
+        u_created_at -> Datetime,
+        u_updated_at -> Datetime,
     }
 }
 
