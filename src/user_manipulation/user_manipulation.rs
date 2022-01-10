@@ -1,4 +1,4 @@
-use crate::models::models::{User, NewUser};
+use crate::models::models::{NewUser, User};
 use crate::models::schema::{users, users::dsl::*};
 use crate::utils::establish_connection::establish_connection;
 use diesel::prelude::*;

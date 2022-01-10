@@ -19,8 +19,7 @@ table! {
 }
 
 table! {
-    users (u_id) {
-        u_id -> Unsigned<Bigint>,
+    users (u_name) {
         u_name -> Varchar,
         u_email -> Varchar,
         u_password -> Varchar,
@@ -29,8 +28,4 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(
-    exercises,
-    solutions,
-    users,
-);
+allow_tables_to_appear_in_same_query!(exercises, solutions, users,);
