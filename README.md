@@ -25,5 +25,5 @@ Where `username`, `password` and `database` are your sql names.
 
 - Any other distribution/OS:
   - look in your distribution/OS official software repositories
-  - or check the ![MySQL official site](https://dev.mysql.com/downloads/c-api/)
+  - or check the [MySQL official site](https://dev.mysql.com/downloads/c-api/)
 
