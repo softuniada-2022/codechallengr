@@ -1,15 +1,15 @@
 use crate::models::schema::{exercises, solutions, users};
 use chrono::NaiveDateTime;
 use diesel::{Insertable, Queryable};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Queryable, Serialize, Deserialize, Debug)]
 pub struct User {
     pub u_name: String,
     pub u_email: String,
     pub u_password: String,
-    pub u_created_at : NaiveDateTime,
-    pub u_updated_at : NaiveDateTime
+    pub u_created_at: NaiveDateTime,
+    pub u_updated_at: NaiveDateTime,
 }
 
 #[derive(Insertable, Serialize, Deserialize, AsChangeset)]
@@ -18,12 +18,11 @@ pub struct NewUser {
     pub u_name: String,
     pub u_email: String,
     pub u_password: String,
-    pub u_created_at : Option<NaiveDateTime>,
-    pub u_updated_at : Option<NaiveDateTime>
-
+    pub u_created_at: Option<NaiveDateTime>,
+    pub u_updated_at: Option<NaiveDateTime>,
 }
 
-#[derive(Queryable,  Serialize, Deserialize, Debug)]
+#[derive(Queryable, Serialize, Deserialize, Debug)]
 pub struct Solution {
     pub s_id: i32,
     pub ex_id: i32,
@@ -39,7 +38,7 @@ pub struct NewSolution {
     pub submitted_at: NaiveDateTime,
 }
 
-#[derive(Queryable,  Serialize, Deserialize, Debug)]
+#[derive(Queryable, Serialize, Deserialize, Debug)]
 pub struct Exercise {
     pub id: i32,
     pub name: String,

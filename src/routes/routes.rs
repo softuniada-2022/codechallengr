@@ -1,7 +1,7 @@
-use rocket;
-use crate::user_manipulation::user_manipulation::{new_user, get_user};
 use crate::models::models::{NewUser, User};
 use crate::rocket::serde::json::Json;
+use crate::user_manipulation::user_manipulation::{get_user, new_user};
+use rocket;
 
 #[get("/")]
 pub fn hello() -> &'static str {

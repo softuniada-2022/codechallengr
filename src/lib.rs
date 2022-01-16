@@ -1,14 +1,14 @@
 pub mod models;
+pub mod routes;
 pub mod user_manipulation;
 pub mod utils;
-pub mod routes;
 
 #[macro_use]
 extern crate diesel;
 extern crate bcrypt;
 
 #[macro_use]
-// #[feature(decl_macro)] 
+// #[feature(decl_macro)]
 extern crate rocket;
 // #[macro_use]
 // extern crate rocket_contrib;

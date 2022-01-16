@@ -20,10 +20,10 @@ use diesel::prelude::*;
 //         .expect("Error saving new user");
 // }
 
-pub fn new_user(user: NewUser) -> Option<()>{
+pub fn new_user(user: NewUser) -> Option<()> {
     let conn = establish_connection();
-    let hashed_password =
-        bcrypt::hash(&user.u_password, bcrypt::DEFAULT_COST).expect("Something happened while hashing");
+    let hashed_password = bcrypt::hash(&user.u_password, bcrypt::DEFAULT_COST)
+        .expect("Something happened while hashing");
     let usr = NewUser {
         u_name: user.u_name,
         u_email: user.u_email,
@@ -38,7 +38,7 @@ pub fn new_user(user: NewUser) -> Option<()>{
     match affected {
         Some(1) => Some(()),
         Some(_) => panic!("something in the database fucked up very seriously"),
-        _ => None
+        _ => None,
     }
 }
 

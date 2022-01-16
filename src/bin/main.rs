@@ -1,12 +1,15 @@
 extern crate hackerrank_meets_aoc;
 
-use rocket::{self, Build, Rocket};
 use hackerrank_meets_aoc::routes::routes;
+use rocket::{self, Build, Rocket};
 // use crate::rocket::launch;
 
 #[rocket::launch]
-fn launcc() -> Rocket<Build>{
-    rocket::build().mount("/", rocket::routes![routes::hello, routes::register, routes::view_user])
+fn launcc() -> Rocket<Build> {
+    rocket::build().mount(
+        "/",
+        rocket::routes![routes::hello, routes::register, routes::view_user],
+    )
 }
 
 // fn main() {
