@@ -1,4 +1,4 @@
-use crate::models::models::{NewUser, User};
+use crate::models::models::{NewUser, User, RegistrationUser, LoginInformation};
 use crate::models::schema::users;
 use crate::utils::establish_connection::establish_connection;
 use diesel::prelude::*;
@@ -20,13 +20,13 @@ use diesel::prelude::*;
 //         .expect("Error saving new user");
 // }
 
-pub fn new_user(user: NewUser) -> Option<()> {
+pub fn new_user(user: RegistrationUser) -> Option<()> {
     let conn = establish_connection();
-    let hashed_password = bcrypt::hash(&user.u_password, bcrypt::DEFAULT_COST)
+    let hashed_password = bcrypt::hash(&user.u_password.to_string(), bcrypt::DEFAULT_COST)
         .expect("Something happened while hashing");
     let usr = NewUser {
-        u_name: user.u_name,
-        u_email: user.u_email,
+        u_name: user.u_name.to_string(),
+        u_email: user.u_email.to_string(),
         u_password: hashed_password,
         u_created_at: Some(chrono::Utc::now().naive_utc()),
         u_updated_at: Some(chrono::Utc::now().naive_utc()),
@@ -59,15 +59,26 @@ pub fn get_all_users() -> Vec<User> {
     usrs
 }
 
-pub fn check_password(username: String, password: String) -> bool {
+// pub fn check_password(username: String, password: String) -> bool {
+//     let conn = establish_connection();
+//     let user = users::table
+//         .filter(users::u_name.eq(username))
+//         .first::<User>(&conn)
+//         .expect("Error loading user");
+//     let is_correct = bcrypt::verify(&password, &user.u_password).unwrap();
+//     is_correct
+// }
+
+pub fn check_password(info: LoginInformation) -> bool {
     let conn = establish_connection();
     let user = users::table
-        .filter(users::u_name.eq(username))
+        .filter(users::u_name.eq(info.u_name))
         .first::<User>(&conn)
         .expect("Error loading user");
-    let is_correct = bcrypt::verify(&password, &user.u_password).unwrap();
+    let is_correct = bcrypt::verify(&info.u_password, &user.u_password).unwrap();
     is_correct
 }
+
 
 pub fn updated_user(username: String) {
     let conn = establish_connection();

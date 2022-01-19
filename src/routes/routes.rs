@@ -1,25 +1,28 @@
-use crate::models::models::{NewUser, User};
+use crate::models::models::{LoginInformation, User, RegistrationUser};
 use crate::rocket::serde::json::Json;
-use crate::user_manipulation::user_manipulation::{get_user, new_user};
-use rocket;
+use crate::user_manipulation::user_manipulation::{check_password, get_user, new_user};
+// use rocket;
 
 #[get("/")]
-pub fn hello() -> &'static str {
-    "Hello, world!"
+pub fn hello() -> String {
+    "Hello, world!".to_string()
 }
 
-#[post("/signup", format = "application/json", data = "<user>")]
-pub fn register(user: Json<NewUser>) -> &'static str {
-    // match new_user(user.into_inner()) {
-    //     true => "User created",
-    //     false => "User already exists",
-    // }
-    new_user(user.into_inner());
-    "User created"
-    // TODO: implement a true/false return for the user creation
-}
-
-#[get("/user/<username>")]
-pub fn view_user(username: String) -> rocket::serde::json::Json<User> {
+#[get("/api/user/<username>")]
+pub fn view_user(username: String) -> Json<User> {
     get_user(username).into()
+}
+
+#[post("/api/login", format = "application/json", data = "<credentials>")]
+pub fn login(credentials: Json<LoginInformation>) -> String {
+    match check_password(credentials.into_inner()) {
+        true => "Success".to_string(),
+        false => "Failure".to_string(),
+    }
+}
+
+#[post("/api/user", format = "application/json", data = "<credentials>")]
+pub fn signup(credentials: Json<RegistrationUser>) -> String {
+    new_user(credentials.into_inner());
+    "Done".to_string()
 }

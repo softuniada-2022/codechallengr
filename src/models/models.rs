@@ -1,6 +1,7 @@
 use crate::models::schema::{exercises, solutions, users};
 use chrono::NaiveDateTime;
 use diesel::{Insertable, Queryable};
+use rocket::form::FromForm;
 use serde::{Deserialize, Serialize};
 
 #[derive(Queryable, Serialize, Deserialize, Debug)]
@@ -20,6 +21,19 @@ pub struct NewUser {
     pub u_password: String,
     pub u_created_at: Option<NaiveDateTime>,
     pub u_updated_at: Option<NaiveDateTime>,
+}
+
+#[derive(Serialize, Deserialize, FromForm)]
+pub struct RegistrationUser<'r> {
+    pub r#u_name: &'r str,
+    pub r#u_email: &'r str,
+    pub r#u_password: &'r str,
+}
+
+#[derive(FromForm, Serialize, Deserialize)]
+pub struct LoginInformation<'r> {
+    pub r#u_name: &'r str,
+    pub r#u_password: &'r str,
 }
 
 #[derive(Queryable, Serialize, Deserialize, Debug)]
