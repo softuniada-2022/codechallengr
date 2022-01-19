@@ -23,6 +23,8 @@ pub fn login(credentials: Json<LoginInformation>) -> String {
 
 #[post("/api/user", format = "application/json", data = "<credentials>")]
 pub fn signup(credentials: Json<RegistrationUser>) -> String {
-    new_user(credentials.into_inner());
-    "Done".to_string()
+    match new_user(credentials.into_inner()) {
+        Some(()) => "Success".to_string(),
+        _ => "Failure".to_string(),
+    }
 }
