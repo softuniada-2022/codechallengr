@@ -1,4 +1,4 @@
-use crate::models::models::{NewUser, User, RegistrationUser, LoginInformation};
+use crate::models::models::{LoginInformation, NewUser, RegistrationUser, User};
 use crate::models::schema::users;
 use crate::utils::establish_connection::establish_connection;
 use diesel::prelude::*;
@@ -78,7 +78,6 @@ pub fn check_password(info: LoginInformation) -> bool {
     let is_correct = bcrypt::verify(&info.u_password, &user.u_password).unwrap();
     is_correct
 }
-
 
 pub fn updated_user(username: String) {
     let conn = establish_connection();

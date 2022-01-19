@@ -1,6 +1,6 @@
-use rocket::serde::json::Json;
-use crate::models::models::{User, RegistrationUser};
+use crate::models::models::{RegistrationUser, User};
 use crate::user_manipulation::user_manipulation;
+use rocket::serde::json::Json;
 
 #[get("/user/<username>")]
 pub fn get_user(username: String) -> Json<User> {
