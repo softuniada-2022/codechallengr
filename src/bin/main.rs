@@ -4,7 +4,7 @@ use hackerrank_meets_aoc::routes::routes;
 use rocket::{self, Build, Rocket};
 
 #[rocket::launch]
-fn launcc() -> Rocket<Build> {
+fn launch() -> Rocket<Build> {
     rocket::build()
         .mount(
             "/",
