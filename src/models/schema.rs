@@ -14,7 +14,7 @@ table! {
         s_id -> Unsigned<Bigint>,
         ex_id -> Integer,
         u_id -> Integer,
-        submitted_at -> Datetime,
+        s_submitted_at -> Datetime,
     }
 }
 
@@ -28,4 +28,8 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(exercises, solutions, users,);
+allow_tables_to_appear_in_same_query!(
+    exercises,
+    solutions,
+    users,
+);
