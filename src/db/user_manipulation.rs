@@ -1,5 +1,5 @@
-use crate::models::models::{LoginInformation, NewUser, RegistrationUser, User};
 use crate::models::schema::users;
+use crate::models::users::{LoginInformation, NewUser, RegistrationUser, User, UpdateUser};
 use crate::utils::establish_connection::establish_connection;
 use diesel::prelude::*;
 
@@ -20,13 +20,13 @@ use diesel::prelude::*;
 //         .expect("Error saving new user");
 // }
 
-pub fn new_user(user: RegistrationUser) -> Option<()> {
+pub fn new_user(user: RegistrationUser) -> bool {
     let conn = establish_connection();
     let hashed_password = bcrypt::hash(&user.u_password.to_string(), bcrypt::DEFAULT_COST)
         .expect("Something happened while hashing");
     let usr = NewUser {
-        u_name: user.u_name.to_string(),
-        u_email: user.u_email.to_string(),
+        u_name: user.u_name,
+        u_email: user.u_email,
         u_password: hashed_password,
         u_created_at: Some(chrono::Utc::now().naive_utc()),
         u_updated_at: Some(chrono::Utc::now().naive_utc()),
@@ -36,38 +36,26 @@ pub fn new_user(user: RegistrationUser) -> Option<()> {
         .execute(&conn)
         .ok();
     match affected {
-        Some(1) => Some(()),
-        Some(_) => panic!("something in the database fucked up very seriously"),
-        _ => None,
+        Some(1) => true,
+        Some(_) => false,
+        _ => false,
     }
 }
 
-pub fn get_user(username: String) -> User {
+pub fn get_user(username: String) -> Option<User> {
     let conn = establish_connection();
-    let user = users::table
+    users::table
         .filter(users::u_name.eq(username))
         .first(&conn)
-        .expect("Error loading user");
-    user
+        .ok()
 }
 
-pub fn get_all_users() -> Vec<User> {
+pub fn get_all_users() -> Option<Vec<User>> {
     let conn = establish_connection();
-    let usrs = users::table
+    users::table
         .load::<User>(&conn)
-        .expect("Error loading users");
-    usrs
+        .ok()
 }
-
-// pub fn check_password(username: String, password: String) -> bool {
-//     let conn = establish_connection();
-//     let user = users::table
-//         .filter(users::u_name.eq(username))
-//         .first::<User>(&conn)
-//         .expect("Error loading user");
-//     let is_correct = bcrypt::verify(&password, &user.u_password).unwrap();
-//     is_correct
-// }
 
 pub fn check_password(info: LoginInformation) -> bool {
     let conn = establish_connection();
@@ -75,25 +63,19 @@ pub fn check_password(info: LoginInformation) -> bool {
         .filter(users::u_name.eq(info.u_name))
         .first::<User>(&conn)
         .expect("Error loading user");
-    let is_correct = bcrypt::verify(&info.u_password, &user.u_password).unwrap();
-    is_correct
+    bcrypt::verify(&info.u_password, &user.u_password).unwrap()
 }
 
-pub fn updated_user(username: String) {
+pub fn update_user(user: UpdateUser) -> Option<User> {
     let conn = establish_connection();
-    let user: User = users::table
-        .filter(users::u_name.eq(&username))
-        .first(&conn)
-        .expect("Error loading user");
-    let updated_user = NewUser {
-        u_name: user.u_name,
-        u_email: user.u_email,
-        u_password: user.u_password,
-        u_created_at: Some(user.u_created_at),
-        u_updated_at: Some(chrono::Utc::now().naive_utc()),
-    };
-    diesel::update(users::table.filter(users::u_name.eq(&username)))
+    let updated_user = NewUser::from(user);
+    let affected = diesel::update(users::table.filter(users::u_name.eq(&updated_user.u_name)))
         .set(&updated_user)
         .execute(&conn)
-        .expect("Error updating user");
+        .ok();
+    match affected {
+        Some(1) => Some(User::from(updated_user)),
+        Some(0) => None,
+        _ => None,
+    }
 }

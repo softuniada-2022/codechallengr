@@ -1,5 +1,5 @@
-use crate::models::models::LoginInformation;
-use crate::user_manipulation::user_manipulation;
+use crate::db::user_manipulation;
+use crate::models::users::LoginInformation;
 use rocket::serde::json::Json;
 
 #[post("/login", format = "application/json", data = "<credentials>")]

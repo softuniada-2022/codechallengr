@@ -14,6 +14,8 @@ table! {
         s_id -> Unsigned<Bigint>,
         ex_id -> Integer,
         u_id -> Integer,
+        s_answer -> Text,
+        s_correct -> Bool,
         s_submitted_at -> Datetime,
     }
 }
