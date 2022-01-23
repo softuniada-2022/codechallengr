@@ -3,23 +3,6 @@ use crate::models::users::{LoginInformation, NewUser, RegistrationUser, User, Up
 use crate::utils::establish_connection::establish_connection;
 use diesel::prelude::*;
 
-// pub fn new_user(name: String, email: String, password: String) {
-//     let conn = establish_connection();
-//     let hashed_password =
-//         bcrypt::hash(&password, bcrypt::DEFAULT_COST).expect("Something happened while hashing");
-//     let new_user = NewUser {
-//         u_name: name,
-//         u_email: email,
-//         u_password: hashed_password,
-//         u_created_at: chrono::Utc::now().naive_utc(),
-//         u_updated_at: chrono::Utc::now().naive_utc(),
-//     };
-//     diesel::insert_into(users::table)
-//         .values(&new_user)
-//         .execute(&conn)
-//         .expect("Error saving new user");
-// }
-
 pub fn new_user(user: RegistrationUser) -> bool {
     let conn = establish_connection();
     let hashed_password = bcrypt::hash(&user.u_password.to_string(), bcrypt::DEFAULT_COST)
