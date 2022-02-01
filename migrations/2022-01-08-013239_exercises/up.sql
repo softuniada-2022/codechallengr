@@ -2,6 +2,7 @@
 
 CREATE TABLE exercises (
   ex_id SERIAL PRIMARY KEY,
+  u_id VARCHAR(50) NOT NULL,
   ex_name VARCHAR(255) NOT NULL,
   ex_description TEXT NOT NULL,
   ex_answer TEXT NOT NULL,

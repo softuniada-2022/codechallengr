@@ -12,5 +12,6 @@ extern crate bcrypt;
 extern crate rocket;
 // #[macro_use]
 // extern crate rocket_contrib;
+extern crate diesel_derive_enum;
 extern crate serde;
 extern crate serde_json;

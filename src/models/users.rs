@@ -1,13 +1,17 @@
+use crate::bcrypt;
+use crate::diesel::{Insertable, Queryable};
+use crate::models::permissions::Permission;
 use crate::models::schema::users;
+use crate::serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
-use diesel::{Insertable, Queryable};
-use serde::{Deserialize, Serialize};
 
 #[derive(Queryable, Serialize, Deserialize, Debug)]
 pub struct User {
     pub u_name: String,
     pub u_email: String,
+    #[serde(skip_serializing)]
     pub u_password: String,
+    pub u_permission: Permission,
     pub u_created_at: NaiveDateTime,
     pub u_updated_at: NaiveDateTime,
 }
@@ -18,8 +22,9 @@ pub struct NewUser {
     pub u_name: String,
     pub u_email: String,
     pub u_password: String,
-    pub u_created_at: Option<NaiveDateTime>,
-    pub u_updated_at: Option<NaiveDateTime>,
+    pub u_permission: Permission,
+    pub u_created_at: NaiveDateTime,
+    pub u_updated_at: NaiveDateTime,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -34,7 +39,7 @@ pub struct UpdateUser {
     pub u_name: String,
     pub u_email: String,
     pub u_password: String,
-    pub u_created_at: Option<NaiveDateTime>,
+    pub u_created_at: NaiveDateTime,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -48,9 +53,25 @@ impl From<UpdateUser> for NewUser {
         NewUser {
             u_name: a.u_name,
             u_email: a.u_email,
-            u_password: a.u_password,
-            u_created_at: Some(chrono::Utc::now().naive_utc()),
-            u_updated_at: Some(chrono::Utc::now().naive_utc()),
+            u_password: bcrypt::hash(a.u_password.to_string(), bcrypt::DEFAULT_COST)
+            .expect("Something happened while hashing"),
+            u_permission: Permission::User,
+            u_created_at: a.u_created_at,
+            u_updated_at: chrono::Utc::now().naive_utc(),
+        }
+    }
+}
+
+impl From<RegistrationUser> for NewUser {
+    fn from(a: RegistrationUser) -> Self {
+        NewUser {
+            u_name: a.u_name,
+            u_email: a.u_email,
+            u_password: bcrypt::hash(a.u_password.to_string(), bcrypt::DEFAULT_COST)
+                .expect("Something happened while hashing"),
+            u_permission: Permission::User,
+            u_created_at: chrono::Utc::now().naive_utc(),
+            u_updated_at: chrono::Utc::now().naive_utc(),
         }
     }
 }
@@ -61,8 +82,9 @@ impl From<NewUser> for User {
             u_name: a.u_name,
             u_email: a.u_email,
             u_password: a.u_password,
-            u_created_at: a.u_created_at.unwrap(),
-            u_updated_at: a.u_updated_at.unwrap(),
+            u_permission: a.u_permission,
+            u_created_at: a.u_created_at,
+            u_updated_at: a.u_updated_at,
         }
     }
 }

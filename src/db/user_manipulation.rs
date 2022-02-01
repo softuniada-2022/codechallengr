@@ -1,19 +1,11 @@
 use crate::models::schema::users;
-use crate::models::users::{LoginInformation, NewUser, RegistrationUser, User, UpdateUser};
+use crate::models::users::{LoginInformation, NewUser, RegistrationUser, UpdateUser, User};
 use crate::utils::establish_connection::establish_connection;
 use diesel::prelude::*;
 
 pub fn new_user(user: RegistrationUser) -> bool {
     let conn = establish_connection();
-    let hashed_password = bcrypt::hash(&user.u_password.to_string(), bcrypt::DEFAULT_COST)
-        .expect("Something happened while hashing");
-    let usr = NewUser {
-        u_name: user.u_name,
-        u_email: user.u_email,
-        u_password: hashed_password,
-        u_created_at: Some(chrono::Utc::now().naive_utc()),
-        u_updated_at: Some(chrono::Utc::now().naive_utc()),
-    };
+    let usr = NewUser::from(user);
     let affected = diesel::insert_into(users::table)
         .values(&usr)
         .execute(&conn)
@@ -35,9 +27,7 @@ pub fn get_user(username: String) -> Option<User> {
 
 pub fn get_all_users() -> Option<Vec<User>> {
     let conn = establish_connection();
-    users::table
-        .load::<User>(&conn)
-        .ok()
+    users::table.load::<User>(&conn).ok()
 }
 
 pub fn check_password(info: LoginInformation) -> bool {
@@ -60,5 +50,15 @@ pub fn update_user(user: UpdateUser) -> Option<User> {
         Some(1) => Some(User::from(updated_user)),
         Some(0) => None,
         _ => None,
+    }
+}
+
+pub fn delete_user(user: String) -> bool {
+    let conn = establish_connection();
+    let affected = diesel::delete(users::table.filter(users::u_name.eq(user))).execute(&conn).ok();
+    match affected {
+        Some(1) => true,
+        Some(0) => false,
+        _ => false,
     }
 }
