@@ -12,8 +12,8 @@ pub fn post_user(credentials: Json<RegistrationUser>) -> Json<bool> {
     user_manipulation::new_user(credentials.into_inner()).into()
 }
 
-#[put("/user/<username>", format = "application/json", data = "<user>")]
-pub fn update_user(username: String, user: Json<UpdateUser>) -> Json<User> {
+#[put("/user/<_username>", format = "application/json", data = "<user>")]
+pub fn update_user(_username: String, user: Json<UpdateUser>) -> Json<User> {
     user_manipulation::update_user(user.into_inner())
         .unwrap()
         .into()

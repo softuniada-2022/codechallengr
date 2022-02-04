@@ -48,7 +48,7 @@ where
             1 => Permission::User,
             2 => Permission::AuthAuthor,
             3 => Permission::Admin,
-            _ => return Err("Invalid permission".into())
+            _ => return Err("Invalid permission".into()),
         })
     }
 }

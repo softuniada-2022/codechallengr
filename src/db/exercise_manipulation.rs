@@ -17,6 +17,15 @@ pub fn new_exercise(exercise: CreateExercise) -> bool {
     }
 }
 
+pub fn get_input(id: i32) -> Option<String> {
+    let conn = establish_connection();
+    exercises::table
+        .filter(exercises::ex_id.eq(id as u64))
+        .select(exercises::ex_input)
+        .first::<String>(&conn)
+        .ok()
+}
+
 pub fn get_exercise(id: i32) -> Option<Exercise> {
     let conn = establish_connection();
     exercises::table

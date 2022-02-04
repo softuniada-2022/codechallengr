@@ -1,8 +1,7 @@
-use crate::{models::schema::solutions, routes::solution};
+use crate::{models::schema::solutions};
 use chrono::NaiveDateTime;
 use diesel::{Insertable, Queryable};
 use serde::{Deserialize, Serialize};
-use crate::db::solution_manipulation;
 
 #[derive(Queryable, Serialize, Deserialize, Debug)]
 pub struct Solution {
@@ -31,16 +30,9 @@ pub struct CreateSolution {
     pub s_answer: String,
 }
 
-impl From<CreateSolution> for NewSolution {
-    fn from(a: CreateSolution) -> Self {
-        let sol = a.s_answer;
-        let correct = solution_manipulation::check_solution(a.ex_id, &sol);
-        NewSolution {
-            ex_id: a.ex_id,
-            u_id: a.u_id,
-            s_answer: sol,
-            s_correct: correct,
-            s_submitted_at: chrono::Utc::now().naive_utc(),
-        }
-    }
+#[derive(Deserialize, Serialize)]
+pub struct SolutionResult {
+    pub happened: bool,
+    pub s_correct: bool,
+    pub scored_up: bool,
 }

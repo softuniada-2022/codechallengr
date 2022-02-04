@@ -14,11 +14,13 @@ fn launch() -> Rocket<Build> {
             routes::user::update_user,
             routes::user::delete_user,
             routes::login::post_login,
+            routes::login::post_logout,
             routes::exercise::get_exercise,
             routes::exercise::create_exercise,
             routes::exercise::update_exercise,
             routes::solution::get_solution,
             routes::solution::new_solution,
+            routes::score::get_num_scores,
         ],
     )
 }

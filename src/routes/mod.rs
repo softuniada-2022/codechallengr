@@ -5,5 +5,6 @@ pub fn hello() -> String {
 
 pub mod exercise;
 pub mod login;
+pub mod score;
 pub mod solution;
 pub mod user;

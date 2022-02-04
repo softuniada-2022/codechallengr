@@ -7,11 +7,11 @@ edition = "2021"
 
 [dependencies]
 dotenv = "0.15.0"
-serde = "1.0.133"
+serde = "1.0.136"
 bcrypt = "0.10.1"
 
 [dependencies.serde_json]
-version = "1.0"
+version = "1.0.78"
 features = ["alloc"]
 
 [dependencies.chrono]
@@ -19,7 +19,7 @@ version = "0.4.19"
 features = ["serde"]
 
 [dependencies.diesel]
-version = "1.4.4"
+version = "1.4.8"
 features = ["mysql", "chrono", "numeric"]
 
 [dependencies.diesel-derive-enum]
@@ -28,4 +28,4 @@ features = ["mysql"]
 
 [dependencies.rocket]
 version = "0.5.0-rc.1"
-features = ["json"]
+features = ["json", "secrets"]

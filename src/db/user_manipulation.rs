@@ -30,10 +30,10 @@ pub fn get_all_users() -> Option<Vec<User>> {
     users::table.load::<User>(&conn).ok()
 }
 
-pub fn check_password(info: LoginInformation) -> bool {
+pub fn check_password(info: &LoginInformation) -> bool {
     let conn = establish_connection();
     let user = users::table
-        .filter(users::u_name.eq(info.u_name))
+        .filter(users::u_name.eq(&info.u_name))
         .first::<User>(&conn)
         .expect("Error loading user");
     bcrypt::verify(&info.u_password, &user.u_password).unwrap()
@@ -55,7 +55,9 @@ pub fn update_user(user: UpdateUser) -> Option<User> {
 
 pub fn delete_user(user: String) -> bool {
     let conn = establish_connection();
-    let affected = diesel::delete(users::table.filter(users::u_name.eq(user))).execute(&conn).ok();
+    let affected = diesel::delete(users::table.filter(users::u_name.eq(user)))
+        .execute(&conn)
+        .ok();
     match affected {
         Some(1) => true,
         Some(0) => false,
