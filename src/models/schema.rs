@@ -6,8 +6,17 @@ table! {
         ex_description -> Text,
         ex_input -> Text,
         ex_answer -> Text,
+        ex_difficulty -> Integer,
+        ex_likes -> Integer,
         ex_created_at -> Datetime,
         ex_updated_at -> Datetime,
+    }
+}
+
+table! {
+    likes (u_id, ex_id) {
+        u_id -> Varchar,
+        ex_id -> Integer,
     }
 }
 
@@ -34,4 +43,4 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(exercises, solutions, users,);
+allow_tables_to_appear_in_same_query!(exercises, likes, solutions, users,);

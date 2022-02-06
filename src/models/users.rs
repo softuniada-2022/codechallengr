@@ -5,6 +5,13 @@ use crate::models::schema::users;
 use crate::serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
 
+#[derive(Serialize, Deserialize)]
+pub enum UserError {
+    NotAuthorized,
+    UserNotFound,
+    UserAlreadyExists,
+}
+
 #[derive(Queryable, Serialize, Deserialize, Debug)]
 pub struct User {
     pub u_name: String,
@@ -36,31 +43,9 @@ pub struct RegistrationUser {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct UpdateUser {
-    pub u_name: String,
-    pub u_email: String,
-    pub u_password: String,
-    pub u_created_at: NaiveDateTime,
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct LoginInformation {
     pub u_name: String,
     pub u_password: String,
-}
-
-impl From<UpdateUser> for NewUser {
-    fn from(a: UpdateUser) -> Self {
-        NewUser {
-            u_name: a.u_name,
-            u_email: a.u_email,
-            u_password: bcrypt::hash(a.u_password.to_string(), bcrypt::DEFAULT_COST)
-                .expect("Something happened while hashing"),
-            u_permission: Permission::User,
-            u_created_at: a.u_created_at,
-            u_updated_at: chrono::Utc::now().naive_utc(),
-        }
-    }
 }
 
 impl From<RegistrationUser> for NewUser {

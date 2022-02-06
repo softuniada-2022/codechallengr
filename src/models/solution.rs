@@ -1,7 +1,13 @@
-use crate::{models::schema::solutions};
+use crate::models::schema::solutions;
 use chrono::NaiveDateTime;
 use diesel::{Insertable, Queryable};
 use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+pub enum SolutionError {
+    NotAuthorized,
+    NotFound,
+}
 
 #[derive(Queryable, Serialize, Deserialize, Debug)]
 pub struct Solution {
@@ -26,7 +32,6 @@ pub struct NewSolution {
 #[derive(Serialize, Deserialize)]
 pub struct CreateSolution {
     pub ex_id: i32,
-    pub u_id: String,
     pub s_answer: String,
 }
 
@@ -34,5 +39,5 @@ pub struct CreateSolution {
 pub struct SolutionResult {
     pub happened: bool,
     pub s_correct: bool,
-    pub scored_up: bool,
+    pub prev_scored_up: bool,
 }

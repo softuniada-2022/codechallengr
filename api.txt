@@ -1,0 +1,135 @@
+User Actions {
+
+POST /api/user
+format: application/json
+in -> {
+    "u_name": String,
+    "u_email": String,
+    "u_password": String
+}
+out -> bool
+
+GET /api/user/<username>
+out -> {
+    "u_name": String,
+    "u_email": String,
+    "u_score": i32,
+    "u_permission": Permission,
+    "u_created_at": NaiveDateTime,
+    "u_updated_at": NaiveDateTime,
+}
+
+PUT /api/user/<username>
+format: application/json
+in -> {
+    "u_name": String,
+    "u_email": String,
+    "u_password": String
+}
+out -> bool
+
+DELETE /api/user/<username>
+out -> bool
+
+GET /api/user/limit/<number>
+out -> [
+    "u_name": String,
+    "u_email": String,
+    "u_score": i32,
+    "u_permission": Permission,
+    "u_created_at": NaiveDateTime,
+    "u_updated_at": NaiveDateTime
+]
+
+GET /api/user/<username>/likes
+out -> [
+    "u_id": String,
+    "ex_id": i32,
+]
+}
+
+Login Actions {
+POST /api/login
+format: application/json
+in -> {
+    "u_name": String,
+    "u_password": String
+}
+out -> bool
+
+DELETE /api/login
+out -> bool
+}
+
+Score Actions {
+
+GET /api/score/<number>
+out -> [
+    "user": String,
+    "score": i32
+]
+}
+
+Exercise Actions {
+GET /api/exercise/<id>
+out -> {
+    "ex_id": u64,
+    "u_id": String,
+    "ex_name": String,
+    "ex_description": String,
+    "ex_input": String,
+    "ex_answer": String,
+    "ex_difficulty": i32,
+    "ex_likes": i32,
+    "ex_created_at": NaiveDateTime,
+    "ex_updated_at": NaiveDateTime
+}
+
+POST /api/exercise
+format: application/json
+in -> {
+    "ex_name": String,
+    "ex_description": String,
+    "ex_input": String,
+    "ex_answer": String,
+    "ex_difficulty": String
+}
+out -> bool
+PUT /api/exercise/<id>
+format: application/json
+in -> {
+    "ex_name": String,
+    "ex_description": String,
+    "ex_input": String,
+    "ex_answer": String,
+    "ex_difficulty": String
+}
+out -> bool
+
+GET /api/exercise/<id>/input
+out -> String
+
+POST /api/exercise/<id>/like
+out -> bool
+
+POST /api/exercise/<id>/unlike
+out -> bool
+}
+
+Solution Actions {
+
+POST /api/solution
+format: application/json
+in -> {
+    "ex_id": i32,
+    "s_answer": String
+}
+out -> {
+    "happened": bool,
+    "s_correct": bool,
+    "prev_scored_up": bool
+}
+
+GET /api/solution/<id>
+out -> bool
+}

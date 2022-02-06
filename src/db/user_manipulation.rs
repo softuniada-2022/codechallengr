@@ -1,5 +1,6 @@
+use crate::models::permissions::Permission;
 use crate::models::schema::users;
-use crate::models::users::{LoginInformation, NewUser, RegistrationUser, UpdateUser, User};
+use crate::models::users::{LoginInformation, NewUser, RegistrationUser, User};
 use crate::utils::establish_connection::establish_connection;
 use diesel::prelude::*;
 
@@ -17,7 +18,7 @@ pub fn new_user(user: RegistrationUser) -> bool {
     }
 }
 
-pub fn get_user(username: String) -> Option<User> {
+pub fn get_user(username: &String) -> Option<User> {
     let conn = establish_connection();
     users::table
         .filter(users::u_name.eq(username))
@@ -25,9 +26,22 @@ pub fn get_user(username: String) -> Option<User> {
         .ok()
 }
 
-pub fn get_all_users() -> Option<Vec<User>> {
+pub fn get_num_users(num: i32) -> Option<Vec<User>> {
     let conn = establish_connection();
-    users::table.load::<User>(&conn).ok()
+    users::table
+        .order(users::u_name.desc())
+        .limit(num as i64)
+        .load::<User>(&conn)
+        .ok()
+}
+
+pub fn get_perm(username: &String) -> Option<Permission> {
+    let conn = establish_connection();
+    users::table
+        .filter(users::u_name.eq(username))
+        .select(users::u_permission)
+        .first(&conn)
+        .ok()
 }
 
 pub fn check_password(info: &LoginInformation) -> bool {
@@ -39,7 +53,7 @@ pub fn check_password(info: &LoginInformation) -> bool {
     bcrypt::verify(&info.u_password, &user.u_password).unwrap()
 }
 
-pub fn update_user(user: UpdateUser) -> Option<User> {
+pub fn update_user(user: RegistrationUser) -> Option<bool> {
     let conn = establish_connection();
     let updated_user = NewUser::from(user);
     let affected = diesel::update(users::table.filter(users::u_name.eq(&updated_user.u_name)))
@@ -47,7 +61,7 @@ pub fn update_user(user: UpdateUser) -> Option<User> {
         .execute(&conn)
         .ok();
     match affected {
-        Some(1) => Some(User::from(updated_user)),
+        Some(1) => Some(true),
         Some(0) => None,
         _ => None,
     }

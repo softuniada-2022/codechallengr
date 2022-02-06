@@ -5,11 +5,11 @@ use crate::utils::establish_connection::establish_connection;
 use diesel::prelude::*;
 
 // increment user's score
-pub fn increment_score(id: String) -> bool {
+pub fn increment_score(id: String, num: i32) -> bool {
     let conn = establish_connection();
     let affected = diesel::update(users::table)
         .filter(users::u_name.eq(id))
-        .set(users::u_score.eq(users::u_score + 1))
+        .set(users::u_score.eq(users::u_score + num))
         .execute(&conn)
         .ok();
     match affected {

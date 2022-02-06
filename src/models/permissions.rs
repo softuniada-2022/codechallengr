@@ -1,5 +1,3 @@
-use std::io;
-
 use diesel::{
     backend::Backend,
     deserialize,
@@ -7,6 +5,7 @@ use diesel::{
     sql_types::Integer,
     types::{FromSql, ToSql},
 };
+use std::io;
 
 use crate::serde::{Deserialize, Serialize};
 
@@ -17,6 +16,17 @@ pub enum Permission {
     User,
     AuthAuthor,
     Admin,
+}
+
+impl ToString for Permission {
+    fn to_string(&self) -> String {
+        match self {
+            Permission::Guest => "guest".to_string(),
+            Permission::User => "user".to_string(),
+            Permission::AuthAuthor => "auth_author".to_string(),
+            Permission::Admin => "admin".to_string(),
+        }
+    }
 }
 
 impl<DB: Backend> ToSql<Integer, DB> for Permission

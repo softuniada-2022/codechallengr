@@ -8,15 +8,31 @@ pub fn post_login(cookies: &CookieJar<'_>, credentials: Json<LoginInformation>) 
     let creds = credentials.into_inner();
     match user_manipulation::check_password(&creds) {
         true => {
-            cookies.add_private(Cookie::new("username", creds.u_name));
+            cookies.add(Cookie::new(
+                "password",
+                bcrypt::hash(creds.u_name.clone(), bcrypt::DEFAULT_COST).unwrap(),
+            ));
+            cookies.add(Cookie::new(
+                "perm",
+                bcrypt::hash(
+                    user_manipulation::get_perm(&creds.u_name)
+                        .unwrap()
+                        .to_string(),
+                    bcrypt::DEFAULT_COST,
+                )
+                .unwrap(),
+            ));
+            cookies.add(Cookie::new("username", creds.u_name.clone()));
             true.into()
         }
         false => false.into(),
     }
 }
 
-#[post("/logout")]
+#[delete("/login")]
 pub fn post_logout(cookies: &CookieJar<'_>) -> Json<bool> {
-    cookies.remove_private(Cookie::named("username"));
+    cookies.remove(Cookie::named("username"));
+    cookies.remove(Cookie::named("password"));
+    cookies.remove(Cookie::named("perm"));
     true.into()
 }

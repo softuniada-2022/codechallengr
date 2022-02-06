@@ -11,3 +11,6 @@ extern crate rocket;
 extern crate diesel_derive_enum;
 extern crate serde;
 extern crate serde_json;
+
+#[cfg(test)]
+mod tests;
