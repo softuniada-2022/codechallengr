@@ -29,6 +29,7 @@ fn launch() -> Rocket<Build> {
             routes::exercise::unlike_exercise,
             routes::solution::get_solution,
             routes::solution::new_solution,
+            routes::solution::get_solutions,
             routes::score::get_scores,
         ],
     )

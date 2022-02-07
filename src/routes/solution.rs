@@ -8,6 +8,7 @@ use crate::models::users::Claim;
 use jwt::{decode, DecodingKey, TokenData, Validation};
 use rocket::http::{CookieJar, Status};
 use rocket::response::status::Custom;
+use rocket::response::status::Unauthorized;
 use rocket::serde::json::Json;
 use std::env;
 
@@ -25,6 +26,29 @@ pub fn get_solution(cookies: &CookieJar<'_>, id: i32) -> Json<Option<Solution>> 
         return Some(sln).into();
     }
     None.into()
+}
+
+#[get("/solution?<limit>&<exercise>")]
+pub fn get_solutions(cookies: &CookieJar<'_>, limit: Option<i32>, exercise: i32) -> Result<Json<Vec<Solution>>, Unauthorized<String>> {
+    let claim = decode::<Claim>(
+        cookies.get("token").unwrap().value(),
+        &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
+        &Validation::default(),
+    )
+    .unwrap_or(TokenData {
+        header: Default::default(),
+        claims: Claim {
+            username: "".to_string(),
+            exp: 0,
+            perm: Permission::Guest,
+        },
+    })
+    .claims;
+    if claim.username == *"" {
+        return Err(Unauthorized(Some("You are not logged in.".to_string()))).into();
+    }
+    let slns = solution_manipulation::get_some_solutions_for_user(limit.unwrap_or(10), &exercise, &claim.username);
+    Ok(slns.into())
 }
 
 #[post("/solution", format = "application/json", data = "<solution>")]

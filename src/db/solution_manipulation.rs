@@ -37,6 +37,16 @@ pub fn get_solution(id: i32) -> Option<Solution> {
         .ok()
 }
 
+pub fn get_some_solutions_for_user(limit: i32, ex_id: &i32, u_name: &str) -> Vec<Solution> {
+    let conn = establish_connection();
+    solutions::table
+        .filter(solutions::u_id.eq(u_name))
+        .filter(solutions::ex_id.eq(*ex_id))
+        .limit(limit as i64)
+        .load::<Solution>(&conn)
+        .unwrap()
+}
+
 pub fn get_all_solutions_for_user(ex_id: &i32, u_name: &str) -> Vec<Solution> {
     let conn = establish_connection();
     solutions::table
