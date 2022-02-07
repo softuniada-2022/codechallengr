@@ -148,7 +148,7 @@ pub fn get_exercise_likes(id: i32) -> i32 {
         .unwrap_or(0)
 }
 
-pub fn filter_exercise(sort_by: &str, order: &str) -> Vec<Exercise> {
+pub fn filter_exercise(limit: i32, sort_by: &str, order: &str) -> Vec<Exercise> {
     let conn = establish_connection();
     let mut query = exercises::table.into_boxed();
     if sort_by == "likes" {
@@ -172,5 +172,5 @@ pub fn filter_exercise(sort_by: &str, order: &str) -> Vec<Exercise> {
     } else {
         query = query.order(exercises::ex_id.asc());
     }
-    query.load::<Exercise>(&conn).unwrap()
+    query.limit(limit as i64).load::<Exercise>(&conn).unwrap()
 }

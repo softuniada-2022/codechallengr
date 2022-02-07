@@ -52,9 +52,10 @@ pub fn get_exercise(
     .into())
 }
 
-#[get("/exercise/limit?<sort_by>&<order>")]
+#[get("/exercise?<limit>&<sort_by>&<order>")]
 pub fn filter_exercise(
     cookies: &CookieJar<'_>,
+    limit: i32,
     sort_by: String,
     order: String,
 ) -> Result<Json<Vec<Exercise>>, Json<Vec<LoggedInExercise>>> {
@@ -72,7 +73,7 @@ pub fn filter_exercise(
         },
     })
     .claims;
-    let a = exercise_manipulation::filter_exercise(&sort_by, &order);
+    let a = exercise_manipulation::filter_exercise(limit, &sort_by, &order);
     if claim.username == "".to_string() {
         return Ok(a.into());
     }
