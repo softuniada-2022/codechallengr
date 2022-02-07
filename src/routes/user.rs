@@ -83,8 +83,8 @@ pub fn delete_user(
 
 #[get("/user?<limit>&<sort_type>&<order>")]
 // #[get("/user/limit/<number>")]
-pub fn get_users(limit: i32, sort_type: String, order: String) -> Json<Vec<User>> {
-    user_manipulation::get_num_users(limit, &sort_type, &order).into()
+pub fn get_users(limit: Option<i32>, sort_type: Option<String>, order: Option<String>) -> Json<Vec<User>> {
+    user_manipulation::get_num_users(limit.unwrap_or(50), &sort_type.unwrap_or("score".to_string()), &order.unwrap_or("desc".to_string())).into()
 }
 
 #[get("/user/<username>/likes")]
