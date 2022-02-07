@@ -10,6 +10,7 @@ pub enum UserError {
     NotAuthorized,
     UserNotFound,
     UserAlreadyExists,
+    InternalError,
 }
 
 #[derive(Queryable, Serialize, Deserialize, Debug)]
@@ -38,6 +39,12 @@ pub struct NewUser {
 #[derive(Serialize, Deserialize)]
 pub struct RegistrationUser {
     pub u_name: String,
+    pub u_email: String,
+    pub u_password: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct UpdateUser {
     pub u_email: String,
     pub u_password: String,
 }
@@ -74,4 +81,11 @@ impl From<NewUser> for User {
             u_updated_at: a.u_updated_at,
         }
     }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Claim {
+    pub exp: usize, // Required (validate_exp defaults to true in validation). Expiration time (as UTC timestamp)
+    pub username: String,
+    pub perm: Permission,
 }

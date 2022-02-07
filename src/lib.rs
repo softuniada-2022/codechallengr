@@ -9,6 +9,7 @@ extern crate bcrypt;
 #[macro_use]
 extern crate rocket;
 extern crate diesel_derive_enum;
+extern crate jsonwebtoken as jwt;
 extern crate serde;
 extern crate serde_json;
 
