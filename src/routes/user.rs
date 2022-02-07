@@ -39,7 +39,7 @@ pub fn update_user(
     user: Json<UpdateUser>,
 ) -> Result<Json<User>, Unauthorized<String>> {
     let claim = decode::<Claim>(
-        &cookies.get("token").unwrap().value().to_string(),
+        cookies.get("token").unwrap().value(),
         &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
         &Validation::default(),
     )
@@ -66,7 +66,7 @@ pub fn delete_user(
     username: String,
 ) -> Result<Accepted<String>, Unauthorized<String>> {
     let claim = decode::<Claim>(
-        &cookies.get("token").unwrap().value().to_string(),
+        cookies.get("token").unwrap().value(),
         &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
         &Validation::default(),
     )
@@ -83,8 +83,17 @@ pub fn delete_user(
 
 #[get("/user?<limit>&<sort_type>&<order>")]
 // #[get("/user/limit/<number>")]
-pub fn get_users(limit: Option<i32>, sort_type: Option<String>, order: Option<String>) -> Json<Vec<User>> {
-    user_manipulation::get_num_users(limit.unwrap_or(50), &sort_type.unwrap_or("score".to_string()), &order.unwrap_or("desc".to_string())).into()
+pub fn get_users(
+    limit: Option<i32>,
+    sort_type: Option<String>,
+    order: Option<String>,
+) -> Json<Vec<User>> {
+    user_manipulation::get_num_users(
+        limit.unwrap_or(50),
+        &sort_type.unwrap_or("score".to_string()),
+        &order.unwrap_or("desc".to_string()),
+    )
+    .into()
 }
 
 #[get("/user/<username>/likes")]

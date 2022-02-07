@@ -60,7 +60,7 @@ impl From<RegistrationUser> for NewUser {
         NewUser {
             u_name: a.u_name,
             u_email: a.u_email,
-            u_password: bcrypt::hash(a.u_password.to_string(), bcrypt::DEFAULT_COST)
+            u_password: bcrypt::hash(&a.u_password, bcrypt::DEFAULT_COST)
                 .expect("Something happened while hashing"),
             u_permission: Permission::User,
             u_created_at: chrono::Utc::now().naive_utc(),

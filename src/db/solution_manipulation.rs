@@ -4,8 +4,8 @@ use crate::models::solution::{NewSolution, Solution};
 use crate::utils::establish_connection::establish_connection;
 use diesel::prelude::*;
 
-// GET EXERCISE'S SOLUTION && CHECK IF USER'S SOLUTION IS CORRECT && RETURN BOOL
-pub fn check_solution(ex_id: &i32, s_answer: &String) -> bool {
+// get exercise's solution && check if user's solution is correct & return bool
+pub fn check_solution(ex_id: &i32, s_answer: &str) -> bool {
     let conn = establish_connection();
     exercises::table
         .filter(exercises::ex_id.eq(*ex_id as u64))
@@ -37,7 +37,7 @@ pub fn get_solution(id: i32) -> Option<Solution> {
         .ok()
 }
 
-pub fn get_all_solutions_for_user(ex_id: &i32, u_name: &String) -> Vec<Solution> {
+pub fn get_all_solutions_for_user(ex_id: &i32, u_name: &str) -> Vec<Solution> {
     let conn = establish_connection();
     solutions::table
         .filter(solutions::u_id.eq(u_name))

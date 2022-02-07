@@ -2,6 +2,7 @@ use crate::models::exercise::{Exercise, ExerciseError, NewExercise};
 use crate::models::likes::Like;
 use crate::models::schema::{exercises, likes};
 use crate::utils::establish_connection::establish_connection;
+use cain::cain;
 use diesel::prelude::*;
 
 pub fn new_exercise(exercise: &NewExercise) -> bool {
@@ -150,27 +151,24 @@ pub fn get_exercise_likes(id: i32) -> i32 {
 
 pub fn filter_exercise(limit: i32, sort_by: &str, order: &str) -> Vec<Exercise> {
     let conn = establish_connection();
-    let mut query = exercises::table.into_boxed();
-    if sort_by == "likes" {
-        query = match order {
-            "desc" => query.order(exercises::ex_likes.desc()),
-            "asc" => query.order(exercises::ex_likes.asc()),
-            _ => query.order(exercises::ex_difficulty.asc()),
-        }
-    } else if sort_by == "name" {
-        query = match order {
-            "desc" => query.order(exercises::ex_name.desc()),
-            "asc" => query.order(exercises::ex_name.asc()),
-            _ => query.order(exercises::ex_name.asc()),
-        }
-    } else if sort_by == "difficulty" {
-        query = match order {
-            "desc" => query.order(exercises::ex_difficulty.desc()),
-            "asc" => query.order(exercises::ex_difficulty.asc()),
-            _ => query.order(exercises::ex_difficulty.asc()),
-        }
+    let query = exercises::table.into_boxed();
+    let query = cain! {
+        let col = match sort_by {
+            "likes" => exercises::ex_likes,
+            "name" => exercises::ex_name,
+            "difficulty" => exercises::ex_difficulty,
+            _ => exercises::ex_id,
+        };
+        let expr = match order {
+            "desc" => col.desc(),
+            "asc" => col.asc(),
+            _ => col.asc(),
+        };
+        query.order(expr)
+    };
+    if limit > 0 {
+        query.limit(limit as i64).load::<Exercise>(&conn).unwrap()
     } else {
-        query = query.order(exercises::ex_id.asc());
+        query.load::<Exercise>(&conn).unwrap()
     }
-    query.limit(limit as i64).load::<Exercise>(&conn).unwrap()
 }

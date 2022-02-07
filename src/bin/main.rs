@@ -1,7 +1,7 @@
 extern crate codechallenger;
 
-use dotenv::dotenv;
 use codechallenger::routes;
+use dotenv::dotenv;
 use rocket::{self, Build, Rocket};
 
 #[rocket::launch]
@@ -17,18 +17,19 @@ fn launch() -> Rocket<Build> {
             routes::user::delete_user,
             routes::user::get_likes,
             routes::user::get_users,
+            routes::login::get_login,
             routes::login::post_login,
-            routes::login::post_logout,
+            routes::login::delete_login,
             routes::exercise::get_exercise,
             routes::exercise::create_exercise,
             routes::exercise::update_exercise,
             routes::exercise::get_input,
-            routes::exercise::filter_exercise,
+            routes::exercise::get_exercises,
             routes::exercise::like_exercise,
             routes::exercise::unlike_exercise,
             routes::solution::get_solution,
             routes::solution::new_solution,
-            routes::score::get_num_scores,
+            routes::score::get_scores,
         ],
     )
 }

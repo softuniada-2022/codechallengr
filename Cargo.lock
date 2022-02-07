@@ -208,6 +208,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c4872d67bab6358e59559027aa3b9157c53d9358c51423c17554809a8858e0f8"
 
 [[package]]
+name = "cain"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "661e990255f7a6bd25e316b3d66c3f88c6f18d2846ca8109a8c2531e974c8958"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "cc"
 version = "1.0.72"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -256,6 +267,7 @@ name = "codechallenger"
 version = "0.1.0"
 dependencies = [
  "bcrypt",
+ "cain",
  "chrono",
  "diesel",
  "diesel-derive-enum",

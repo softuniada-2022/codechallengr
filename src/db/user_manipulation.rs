@@ -19,7 +19,7 @@ pub fn new_user(user: RegistrationUser) -> Result<User, UserError> {
     }
 }
 
-pub fn get_user(username: &String) -> Option<User> {
+pub fn get_user(username: &str) -> Option<User> {
     let conn = establish_connection();
     let a: Option<User> = users::table
         .filter(users::u_name.eq(&username))
@@ -31,7 +31,7 @@ pub fn get_user(username: &String) -> Option<User> {
             u_email: a.u_email,
             u_password: a.u_password,
             u_score: a.u_score,
-            u_permission: get_perm(&username).unwrap(),
+            u_permission: get_perm(username).unwrap(),
             u_created_at: a.u_created_at,
             u_updated_at: a.u_updated_at,
         }),
@@ -39,7 +39,7 @@ pub fn get_user(username: &String) -> Option<User> {
     }
 }
 
-pub fn get_perm(username: &String) -> Option<Permission> {
+pub fn get_perm(username: &str) -> Option<Permission> {
     let conn = establish_connection();
     users::table
         .filter(users::u_name.eq(username))

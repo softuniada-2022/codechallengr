@@ -19,7 +19,7 @@ pub fn get_exercise(
     id: i32,
 ) -> Result<Json<Exercise>, Json<LoggedInExercise>> {
     let claim = decode::<Claim>(
-        &cookies.get("token").unwrap().value().to_string(),
+        cookies.get("token").unwrap().value(),
         &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
         &Validation::default(),
     )
@@ -32,35 +32,26 @@ pub fn get_exercise(
         },
     })
     .claims;
-    if claim.username == "".to_string() {
+    if claim.perm == Permission::Guest {
         return Ok(exercise_manipulation::get_exercise(id).unwrap().into());
     }
     let ex = exercise_manipulation::get_exercise(id).unwrap();
     Err(LoggedInExercise {
-        ex_id: ex.ex_id,
-        u_id: ex.u_id,
-        ex_name: ex.ex_name,
-        ex_description: ex.ex_description,
-        ex_input: ex.ex_input,
-        ex_answer: ex.ex_answer,
-        ex_difficulty: ex.ex_difficulty,
-        ex_likes: ex.ex_likes,
         liked_by_me: verify_permission::verify_like_owner(&claim, id),
-        ex_created_at: ex.ex_created_at,
-        ex_updated_at: ex.ex_updated_at,
+        ..ex.into()
     }
     .into())
 }
 
 #[get("/exercise?<limit>&<sort_by>&<order>")]
-pub fn filter_exercise(
+pub fn get_exercises(
     cookies: &CookieJar<'_>,
     limit: Option<i32>,
     sort_by: Option<String>,
     order: Option<String>,
 ) -> Result<Json<Vec<Exercise>>, Json<Vec<LoggedInExercise>>> {
     let claim = decode::<Claim>(
-        &cookies.get("token").unwrap().value().to_string(),
+        cookies.get("token").unwrap().value(),
         &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
         &Validation::default(),
     )
@@ -73,27 +64,23 @@ pub fn filter_exercise(
         },
     })
     .claims;
-    let a = exercise_manipulation::filter_exercise(limit.unwrap_or(50), &sort_by.unwrap_or("name".to_string()), &order.unwrap_or("asc".to_string()));
-    if claim.username == "".to_string() {
-        return Ok(a.into());
+    let exs = exercise_manipulation::filter_exercise(
+        limit.unwrap_or(0),
+        &sort_by.unwrap_or("name".to_string()),
+        &order.unwrap_or("asc".to_string()),
+    );
+    if claim.perm == Permission::Guest {
+        return Ok(exs.into());
     }
-    let mut out = vec![];
-    for exercise in a {
-        out.push(LoggedInExercise {
-            ex_id: exercise.ex_id,
-            u_id: exercise.u_id,
-            ex_name: exercise.ex_name,
-            ex_description: exercise.ex_description,
-            ex_input: exercise.ex_input,
-            ex_answer: exercise.ex_answer,
-            ex_difficulty: exercise.ex_difficulty,
-            ex_likes: exercise.ex_likes,
-            liked_by_me: verify_permission::verify_like_owner(&claim, exercise.ex_id as i32),
-            ex_created_at: exercise.ex_created_at,
-            ex_updated_at: exercise.ex_updated_at,
-        });
-    }
-    Err(out.into())
+    Err(exs
+        .into_iter()
+        .map(|e| e.into())
+        .map(|e: LoggedInExercise| LoggedInExercise {
+            liked_by_me: verify_permission::verify_like_owner(&claim, e.ex_id as i32),
+            ..e
+        })
+        .collect::<Vec<_>>()
+        .into())
 }
 
 #[post("/exercise", format = "application/json", data = "<exercise>")]
@@ -104,7 +91,7 @@ pub fn create_exercise(
     dotenv().ok();
     let ex = exercise.into_inner();
     let claim = decode::<Claim>(
-        &cookies.get("token").unwrap().value().to_string(),
+        cookies.get("token").unwrap().value(),
         &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
         &Validation::default(),
     )
@@ -113,7 +100,7 @@ pub fn create_exercise(
     if verify_permission::verify_allowed_author(&claim) {
         let exercise = NewExercise {
             ex_name: ex.ex_name,
-            u_id: claim.username.clone(),
+            u_id: claim.username,
             ex_description: ex.ex_description,
             ex_input: ex.ex_input,
             ex_answer: ex.ex_answer,
@@ -123,7 +110,7 @@ pub fn create_exercise(
             ex_updated_at: chrono::Utc::now().naive_utc(),
         };
         exercise_manipulation::new_exercise(&exercise);
-        return Ok(Exercise::from(exercise).into());
+        Ok(Exercise::from(exercise).into())
     } else {
         Err(Unauthorized(Some(
             "You do not have permission to create challenges".to_string(),
@@ -139,7 +126,7 @@ pub fn update_exercise(
 ) -> Result<Json<Exercise>, Unauthorized<String>> {
     let ex = exercise.into_inner();
     let claim = decode::<Claim>(
-        &cookies.get("token").unwrap().value().to_string(),
+        cookies.get("token").unwrap().value(),
         &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
         &Validation::default(),
     )
@@ -179,13 +166,13 @@ pub fn get_input(id: String) -> Json<String> {
         .into()
 }
 
-#[get("/exercise/<id>/like")]
+#[post("/exercise/<id>/like")]
 pub fn like_exercise(
     cookies: &CookieJar<'_>,
     id: i32,
 ) -> Result<Accepted<String>, Unauthorized<String>> {
     let claim = decode::<Claim>(
-        &cookies.get("token").unwrap().value().to_string(),
+        cookies.get("token").unwrap().value(),
         &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
         &Validation::default(),
     )
@@ -201,17 +188,17 @@ pub fn like_exercise(
         u_id: claim.username,
         ex_id: id,
     });
-    return Ok(Accepted(Some("You liked this exercise".to_string())));
+    Ok(Accepted(Some("You liked this exercise".to_string())))
     // }
 }
 
-#[get("/exercise/<id>/unlike")]
+#[post("/exercise/<id>/unlike")]
 pub fn unlike_exercise(
     cookies: &CookieJar<'_>,
     id: i32,
 ) -> Result<Accepted<String>, Unauthorized<String>> {
     let claim = decode::<Claim>(
-        &cookies.get("token").unwrap().value().to_string(),
+        cookies.get("token").unwrap().value(),
         &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
         &Validation::default(),
     )
@@ -224,7 +211,7 @@ pub fn unlike_exercise(
         });
         return Ok(Accepted(Some("You unliked this exercise".to_string())));
     }
-    return Err(Unauthorized(Some(
+    Err(Unauthorized(Some(
         "You have not liked this exercise".to_string(),
-    )));
+    )))
 }

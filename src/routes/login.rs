@@ -8,6 +8,14 @@ use rocket::serde::json::Json;
 use dotenv::dotenv;
 use std::env;
 
+#[get("/login")]
+pub fn get_login(cookies: &CookieJar<'_>) -> Result<String, Unauthorized<String>> {
+    match cookies.get("token") {
+        Some(token) => Ok(token.value().to_string()),
+        None => Err(Unauthorized(Some("You are not logged in".to_string()))),
+    }
+}
+
 #[post("/login", format = "application/json", data = "<credentials>")]
 pub fn post_login(
     cookies: &CookieJar<'_>,
@@ -35,7 +43,7 @@ pub fn post_login(
 // send HTTP code instead of true false on login
 
 #[delete("/login")]
-pub fn post_logout(cookies: &CookieJar<'_>) -> Json<bool> {
+pub fn delete_login(cookies: &CookieJar<'_>) -> Json<bool> {
     cookies.remove(Cookie::named("token"));
     true.into()
 }

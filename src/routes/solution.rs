@@ -15,7 +15,7 @@ use std::env;
 pub fn get_solution(cookies: &CookieJar<'_>, id: i32) -> Json<Option<Solution>> {
     let sln = solution_manipulation::get_solution(id).unwrap();
     let claim = decode::<Claim>(
-        &cookies.get("token").unwrap().value().to_string(),
+        cookies.get("token").unwrap().value(),
         &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
         &Validation::default(),
     )
@@ -34,7 +34,7 @@ pub fn new_solution(
 ) -> Result<Json<SolutionResult>, Custom<String>> {
     let sln = solution.into_inner();
     let claim = decode::<Claim>(
-        &cookies.get("token").unwrap().value().to_string(),
+        cookies.get("token").unwrap().value(),
         &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
         &Validation::default(),
     )
@@ -47,7 +47,7 @@ pub fn new_solution(
         },
     })
     .claims;
-    if claim.username == "".to_string() {
+    if claim.perm == Permission::Guest {
         return Err(Custom(Status::Unauthorized, "Unauthorized".to_string()));
     }
     let correct = solution_manipulation::check_solution(&sln.ex_id, &sln.s_answer);
@@ -56,13 +56,13 @@ pub fn new_solution(
     let prev_slns = solution_manipulation::get_all_solutions_for_user(&sln.ex_id, &claim.username);
     let mut prev_scored_up = false;
     for prev_sln in prev_slns {
-        if prev_sln.s_correct == true {
+        if prev_sln.s_correct {
             prev_scored_up = true;
             break;
         }
     }
 
-    if prev_scored_up == false {
+    if !prev_scored_up {
         let _scored_up = score_manipulation::increment_score(claim.username.clone(), difficulty);
     }
 
@@ -74,9 +74,9 @@ pub fn new_solution(
         s_submitted_at: chrono::Utc::now().naive_utc(),
     });
     Ok(SolutionResult {
-        happened: happened,
+        happened,
+        prev_scored_up,
         s_correct: correct,
-        prev_scored_up: prev_scored_up,
     }
     .into())
 }

@@ -2,6 +2,7 @@ use crate::models::schema::users;
 use crate::models::score::Score;
 use crate::models::users::User;
 use crate::utils::establish_connection::establish_connection;
+use cain::cain;
 use diesel::prelude::*;
 
 // increment user's score
@@ -34,21 +35,23 @@ pub fn decrement_score(id: String) -> bool {
 }
 
 // get N scores
-pub fn get_num_scores(x: i32) -> Vec<Score> {
+pub fn get_lim_scores(lim: i32) -> Vec<Score> {
     let conn = establish_connection();
-    let scores = users::table
-        .order(users::u_score.desc())
-        .limit(x as i64)
-        .load::<User>(&conn)
-        .expect("Error loading users");
-    let mut score_vec: Vec<Score> = Vec::new();
-    for score in scores {
-        score_vec.push(Score {
-            user: score.u_name,
-            score: score.u_score,
-        });
+    let scores = users::table.order(users::u_score.desc());
+    cain! {
+        let scores = if lim == 0 {
+            scores
+        } else {
+            scores.limit(lim as i64)
+        };
+        let scores = scores.limit(lim as i64)
+            .load::<User>(&conn)
+            .expect("Error loading users");
+        scores.into_iter().map(|s| Score {
+            user: s.u_name,
+            score: s.u_score,
+        }).collect()
     }
-    score_vec
 }
 
 // get all scores
