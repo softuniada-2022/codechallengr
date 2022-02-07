@@ -5,6 +5,7 @@ use crate::models::permissions::Permission;
 use crate::models::solution::NewSolution;
 use crate::models::solution::{CreateSolution, Solution, SolutionResult};
 use crate::models::users::Claim;
+use crate::utils::verify_permission;
 use jwt::{decode, DecodingKey, TokenData, Validation};
 use rocket::http::{CookieJar, Status};
 use rocket::response::status::Custom;
@@ -77,14 +78,7 @@ pub fn new_solution(
     let correct = solution_manipulation::check_solution(&sln.ex_id, &sln.s_answer);
     let difficulty = exercise_manipulation::get_difficulty(sln.ex_id).unwrap();
 
-    let prev_slns = solution_manipulation::get_all_solutions_for_user(&sln.ex_id, &claim.username);
-    let mut prev_scored_up = false;
-    for prev_sln in prev_slns {
-        if prev_sln.s_correct {
-            prev_scored_up = true;
-            break;
-        }
-    }
+    let prev_scored_up = verify_permission::check_prev_solutions(&claim, sln.ex_id);
 
     if !prev_scored_up {
         let _scored_up = score_manipulation::increment_score(claim.username.clone(), difficulty);

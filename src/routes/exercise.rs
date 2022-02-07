@@ -38,6 +38,7 @@ pub fn get_exercise(
     let ex = exercise_manipulation::get_exercise(id).unwrap();
     Err(LoggedInExercise {
         liked_by_me: verify_permission::verify_like_owner(&claim, id),
+        solved_by_me: verify_permission::check_prev_solutions(&claim, id),
         ..ex.into()
     }
     .into())

@@ -41,6 +41,7 @@ pub struct LoggedInExercise {
     pub ex_difficulty: i32,
     pub ex_likes: i32,
     pub liked_by_me: bool,
+    pub solved_by_me: bool,
     pub ex_created_at: NaiveDateTime,
     pub ex_updated_at: NaiveDateTime,
 }
@@ -109,6 +110,7 @@ impl From<Exercise> for LoggedInExercise {
             ex_created_at: a.ex_created_at,
             ex_updated_at: a.ex_updated_at,
             liked_by_me: false,
+            solved_by_me: false,
         }
     }
 }

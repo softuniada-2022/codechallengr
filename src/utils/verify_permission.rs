@@ -1,4 +1,4 @@
-use crate::db::{exercise_manipulation, user_manipulation};
+use crate::db::{exercise_manipulation, user_manipulation, solution_manipulation};
 use crate::models::likes::Like;
 use crate::models::permissions::Permission;
 use crate::models::users::Claim;
@@ -31,4 +31,13 @@ pub fn verify_like_owner(claim: &Claim, target: i32) -> bool {
             ex_id: 0,
         })
         .u_id
+}
+
+pub fn check_prev_solutions(claim: &Claim, target: i32) -> bool {
+    for solution in solution_manipulation::get_all_solutions_for_user(&target, &claim.username) {
+        if solution.s_correct == true {
+            return true;
+        }
+    }
+    false
 }
