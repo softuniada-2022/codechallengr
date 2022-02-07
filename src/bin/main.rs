@@ -1,7 +1,7 @@
-extern crate hackerrank_meets_aoc;
+extern crate codechallenger;
 
 use dotenv::dotenv;
-use hackerrank_meets_aoc::routes;
+use codechallenger::routes;
 use rocket::{self, Build, Rocket};
 
 #[rocket::launch]

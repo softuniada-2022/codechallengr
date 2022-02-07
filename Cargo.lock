@@ -252,6 +252,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "codechallenger"
+version = "0.1.0"
+dependencies = [
+ "bcrypt",
+ "chrono",
+ "diesel",
+ "diesel-derive-enum",
+ "dotenv",
+ "jsonwebtoken",
+ "rocket",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "const_fn"
 version = "0.4.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -602,21 +617,6 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tracing",
-]
-
-[[package]]
-name = "hackerrank_meets_aoc"
-version = "0.1.0"
-dependencies = [
- "bcrypt",
- "chrono",
- "diesel",
- "diesel-derive-enum",
- "dotenv",
- "jsonwebtoken",
- "rocket",
- "serde",
- "serde_json",
 ]
 
 [[package]]
