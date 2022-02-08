@@ -89,14 +89,14 @@ async function solve() {
     </template>
     <hr />
     <footer class="exercise-footer">
-      <a
+      <!-- <a
         class="exercise-likes"
         :class="exercise.ex_liked_by_me && '--liked'"
         @mouseover="() => prefetchExercise(exercise.ex_id)"
         @click="toggleLike"
       >
         {{ exercise.ex_likes }}
-      </a>
+      </a> -->
       <!-- eslint-disable-next-line prettier/prettier -->
       <span class="exercise-difficulty">Difficulty: {{ exercise.ex_difficulty }}</span>
     </footer>
