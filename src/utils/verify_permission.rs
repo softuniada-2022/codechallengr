@@ -35,7 +35,7 @@ pub fn verify_like_owner(claim: &Claim, target: i32) -> bool {
 
 pub fn check_prev_solutions(claim: &Claim, target: i32) -> bool {
     for solution in solution_manipulation::get_all_solutions_for_user(&target, &claim.username) {
-        if solution.s_correct == true {
+        if solution.s_correct {
             return true;
         }
     }
