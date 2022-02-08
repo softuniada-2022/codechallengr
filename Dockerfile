@@ -5,9 +5,11 @@ RUN cargo install cargo-chef
 
 FROM rust:1.58-slim AS diesel
 WORKDIR /app
+RUN apt-get update
 RUN apt-get install -y default-libmysqlclient-dev
-RUN cargo install diesel_cli
-RUN cp /root/.cargo/bin/diesel .
+RUN cargo install diesel_cli --no-default-features --features mysql
+RUN which diesel
+RUN cp /usr/local/cargo/bin/diesel .
 
 FROM chef AS planner
 COPY . .
