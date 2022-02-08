@@ -34,4 +34,10 @@ WORKDIR /app
 COPY --from=builder /app/target/release/main /usr/local/bin
 COPY --from=vue_builder /app/vue/dist dist
 COPY --from=diesel /app/diesel /usr/local/bin
-ENTRYPOINT ["/app/entry.sh"]
+COPY entry.sh .
+COPY Rocket.toml .
+COPY migrations ./migrations
+RUN chmod +x entry.sh
+RUN apt-get update
+RUN apt-get install -y default-libmysqlclient-dev
+ENTRYPOINT ["/bin/sh", "/app/entry.sh"]

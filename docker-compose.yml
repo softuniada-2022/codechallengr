@@ -3,6 +3,7 @@ version: "3.9"
 services:
   web:
     build: .
+    env_file: .env
     ports:
       - "8000:8000"
     links:
@@ -22,7 +23,9 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 5s
       retries: 25
+    command: --init-file /data/application/init.sql
     volumes:
+      - ./init.sql:/data/application/init.sql
       - mysql:/var/lib/mysql
 volumes:
   mysql:

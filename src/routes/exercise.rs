@@ -18,20 +18,20 @@ pub fn get_exercise(
     cookies: &CookieJar<'_>,
     id: i32,
 ) -> Result<Json<Exercise>, Json<LoggedInExercise>> {
-    let claim = decode::<Claim>(
-        cookies.get("token").unwrap().value(),
-        &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
-        &Validation::default(),
-    )
-    .unwrap_or(TokenData {
+    let guest_claim = TokenData {
         header: Default::default(),
         claims: Claim {
             username: "".to_string(),
             exp: 0,
             perm: Permission::Guest,
         },
-    })
-    .claims;
+    };
+    let claim = match cookies.get("token") {
+        Some(cookie) => decode::<Claim>(cookie.value(), &DecodingKey::from_secret(
+            env::var("JWT_KEY").unwrap().as_bytes(),
+        ), &Validation::default()).unwrap_or(guest_claim),
+        None => guest_claim,
+    }.claims;
     if claim.perm == Permission::Guest {
         return Ok(exercise_manipulation::get_exercise(id).unwrap().into());
     }
@@ -51,20 +51,35 @@ pub fn get_exercises(
     sort_by: Option<String>,
     order: Option<String>,
 ) -> Result<Json<Vec<Exercise>>, Json<Vec<LoggedInExercise>>> {
-    let claim = decode::<Claim>(
-        cookies.get("token").unwrap().value(),
-        &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
-        &Validation::default(),
-    )
-    .unwrap_or(TokenData {
+    let guest_claim = TokenData {
         header: Default::default(),
         claims: Claim {
             username: "".to_string(),
             exp: 0,
             perm: Permission::Guest,
         },
-    })
-    .claims;
+    };
+    let claim = match cookies.get("token") {
+        Some(cookie) => decode::<Claim>(cookie.value(), &DecodingKey::from_secret(
+            env::var("JWT_KEY").unwrap().as_bytes(),
+        ), &Validation::default()).unwrap_or(guest_claim),
+        None => guest_claim,
+    }.claims;
+    //
+    // let claim = decode::<Claim>(
+    //     cookies.get("token").unwrap().value(),
+    //     &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
+    //     &Validation::default(),
+    // )
+    // .unwrap_or(TokenData {
+    //     header: Default::default(),
+    //     claims: Claim {
+    //         username: "".to_string(),
+    //         exp: 0,
+    //         perm: Permission::Guest,
+    //     },
+    // })
+    // .claims;
     let exs = exercise_manipulation::filter_exercise(
         limit.unwrap_or(0),
         &sort_by.unwrap_or("name".to_string()),
@@ -91,13 +106,20 @@ pub fn create_exercise(
 ) -> Result<Json<Exercise>, Unauthorized<String>> {
     dotenv().ok();
     let ex = exercise.into_inner();
-    let claim = decode::<Claim>(
-        cookies.get("token").unwrap().value(),
-        &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
-        &Validation::default(),
-    )
-    .unwrap()
-    .claims;
+    let guest_claim = TokenData {
+        header: Default::default(),
+        claims: Claim {
+            username: "".to_string(),
+            exp: 0,
+            perm: Permission::Guest,
+        },
+    };
+    let claim = match cookies.get("token") {
+        Some(cookie) => decode::<Claim>(cookie.value(), &DecodingKey::from_secret(
+            env::var("JWT_KEY").unwrap().as_bytes(),
+        ), &Validation::default()).unwrap_or(guest_claim),
+        None => guest_claim,
+    }.claims;
     if verify_permission::verify_allowed_author(&claim) {
         let exercise = NewExercise {
             ex_name: ex.ex_name,
@@ -125,13 +147,20 @@ pub fn update_exercise(
     exercise: Json<UpdateExercise>,
 ) -> Result<Json<Exercise>, Unauthorized<String>> {
     let ex = exercise.into_inner();
-    let claim = decode::<Claim>(
-        cookies.get("token").unwrap().value(),
-        &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
-        &Validation::default(),
-    )
-    .unwrap()
-    .claims;
+    let guest_claim = TokenData {
+        header: Default::default(),
+        claims: Claim {
+            username: "".to_string(),
+            exp: 0,
+            perm: Permission::Guest,
+        },
+    };
+    let claim = match cookies.get("token") {
+        Some(cookie) => decode::<Claim>(cookie.value(), &DecodingKey::from_secret(
+            env::var("JWT_KEY").unwrap().as_bytes(),
+        ), &Validation::default()).unwrap_or(guest_claim),
+        None => guest_claim,
+    }.claims;
     if verify_permission::verify_author(&claim, id.parse::<i32>().unwrap()) {
         if verify_permission::verify_allowed_author(&claim) {
             let current = exercise_manipulation::get_exercise(id.parse::<i32>().unwrap()).unwrap();
@@ -171,13 +200,20 @@ pub fn like_exercise(
     cookies: &CookieJar<'_>,
     id: i32,
 ) -> Result<Accepted<String>, Unauthorized<String>> {
-    let claim = decode::<Claim>(
-        cookies.get("token").unwrap().value(),
-        &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
-        &Validation::default(),
-    )
-    .unwrap()
-    .claims;
+    let guest_claim = TokenData {
+        header: Default::default(),
+        claims: Claim {
+            username: "".to_string(),
+            exp: 0,
+            perm: Permission::Guest,
+        },
+    };
+    let claim = match cookies.get("token") {
+        Some(cookie) => decode::<Claim>(cookie.value(), &DecodingKey::from_secret(
+            env::var("JWT_KEY").unwrap().as_bytes(),
+        ), &Validation::default()).unwrap_or(guest_claim),
+        None => guest_claim,
+    }.claims;
     if verify_permission::verify_like_owner(&claim, id) {
         return Err(Unauthorized(Some(
             "You have already liked this challenge".to_string(),
@@ -197,13 +233,20 @@ pub fn unlike_exercise(
     cookies: &CookieJar<'_>,
     id: i32,
 ) -> Result<Accepted<String>, Unauthorized<String>> {
-    let claim = decode::<Claim>(
-        cookies.get("token").unwrap().value(),
-        &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
-        &Validation::default(),
-    )
-    .unwrap()
-    .claims;
+    let guest_claim = TokenData {
+        header: Default::default(),
+        claims: Claim {
+            username: "".to_string(),
+            exp: 0,
+            perm: Permission::Guest,
+        },
+    };
+    let claim = match cookies.get("token") {
+        Some(cookie) => decode::<Claim>(cookie.value(), &DecodingKey::from_secret(
+            env::var("JWT_KEY").unwrap().as_bytes(),
+        ), &Validation::default()).unwrap_or(guest_claim),
+        None => guest_claim,
+    }.claims;
     if verify_permission::verify_like_owner(&claim, id) {
         exercise_manipulation::unlike_exercise(Like {
             u_id: claim.username,

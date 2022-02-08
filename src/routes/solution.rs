@@ -16,13 +16,20 @@ use std::env;
 #[get("/solution/<id>")]
 pub fn get_solution(cookies: &CookieJar<'_>, id: i32) -> Json<Option<Solution>> {
     let sln = solution_manipulation::get_solution(id).unwrap();
-    let claim = decode::<Claim>(
-        cookies.get("token").unwrap().value(),
-        &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
-        &Validation::default(),
-    )
-    .unwrap()
-    .claims;
+    let guest_claim = TokenData {
+        header: Default::default(),
+        claims: Claim {
+            username: "".to_string(),
+            exp: 0,
+            perm: Permission::Guest,
+        },
+    };
+    let claim = match cookies.get("token") {
+        Some(cookie) => decode::<Claim>(cookie.value(), &DecodingKey::from_secret(
+            env::var("JWT_KEY").unwrap().as_bytes(),
+        ), &Validation::default()).unwrap_or(guest_claim),
+        None => guest_claim,
+    }.claims;
     if sln.u_id == claim.username {
         return Some(sln).into();
     }
@@ -35,20 +42,20 @@ pub fn get_solutions(
     limit: Option<i32>,
     exercise: i32,
 ) -> Result<Json<Vec<Solution>>, Unauthorized<String>> {
-    let claim = decode::<Claim>(
-        cookies.get("token").unwrap().value(),
-        &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
-        &Validation::default(),
-    )
-    .unwrap_or(TokenData {
+    let guest_claim = TokenData {
         header: Default::default(),
         claims: Claim {
             username: "".to_string(),
             exp: 0,
             perm: Permission::Guest,
         },
-    })
-    .claims;
+    };
+    let claim = match cookies.get("token") {
+        Some(cookie) => decode::<Claim>(cookie.value(), &DecodingKey::from_secret(
+            env::var("JWT_KEY").unwrap().as_bytes(),
+        ), &Validation::default()).unwrap_or(guest_claim),
+        None => guest_claim,
+    }.claims;
     if claim.username == *"" {
         return Err(Unauthorized(Some("You are not logged in.".to_string())));
     }
@@ -66,20 +73,20 @@ pub fn new_solution(
     solution: Json<CreateSolution>,
 ) -> Result<Json<SolutionResult>, Custom<String>> {
     let sln = solution.into_inner();
-    let claim = decode::<Claim>(
-        cookies.get("token").unwrap().value(),
-        &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
-        &Validation::default(),
-    )
-    .unwrap_or(TokenData {
+    let guest_claim = TokenData {
         header: Default::default(),
         claims: Claim {
             username: "".to_string(),
             exp: 0,
             perm: Permission::Guest,
         },
-    })
-    .claims;
+    };
+    let claim = match cookies.get("token") {
+        Some(cookie) => decode::<Claim>(cookie.value(), &DecodingKey::from_secret(
+            env::var("JWT_KEY").unwrap().as_bytes(),
+        ), &Validation::default()).unwrap_or(guest_claim),
+        None => guest_claim,
+    }.claims;
     if claim.perm == Permission::Guest {
         return Err(Custom(Status::Unauthorized, "Unauthorized".to_string()));
     }
