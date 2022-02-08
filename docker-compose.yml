@@ -10,6 +10,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      DATABASE_URL: "mysql://root@database/c0dechallengr"
   db:
     image: mysql
     ports:
