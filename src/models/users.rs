@@ -19,8 +19,8 @@ pub struct User {
     pub u_email: String,
     #[serde(skip_serializing)]
     pub u_password: String,
-    pub u_score: i32,
     pub u_permission: Permission,
+    pub u_score: i32,
     pub u_created_at: NaiveDateTime,
     pub u_updated_at: NaiveDateTime,
 }
