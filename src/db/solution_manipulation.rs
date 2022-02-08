@@ -2,8 +2,8 @@ use crate::models::exercise::Exercise;
 use crate::models::schema::{exercises, solutions};
 use crate::models::solution::{NewSolution, Solution};
 use crate::utils::establish_connection::establish_connection;
-use diesel::prelude::*;
 use cain::cain;
+use diesel::prelude::*;
 
 // get exercise's solution && check if user's solution is correct & return bool
 pub fn check_solution(ex_id: &i32, s_answer: &str) -> bool {

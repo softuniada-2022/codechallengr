@@ -2,9 +2,9 @@ use crate::models::permissions::Permission;
 use crate::models::schema::users;
 use crate::models::users::{Claim, LoginInformation, NewUser, RegistrationUser, User, UserError};
 use crate::utils::establish_connection::establish_connection;
+use cain::cain;
 use chrono;
 use diesel::prelude::*;
-use cain::cain;
 
 pub fn new_user(user: RegistrationUser) -> Result<User, UserError> {
     let conn = establish_connection();
