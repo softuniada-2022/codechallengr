@@ -53,7 +53,7 @@ pub fn get_solutions(
         return Err(Unauthorized(Some("You are not logged in.".to_string())));
     }
     let slns = solution_manipulation::get_some_solutions_for_user(
-        limit.unwrap_or(10),
+        limit.unwrap_or(0),
         &exercise,
         &claim.username,
     );

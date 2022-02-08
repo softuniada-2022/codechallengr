@@ -89,7 +89,7 @@ pub fn get_users(
     order: Option<String>,
 ) -> Json<Vec<User>> {
     user_manipulation::get_num_users(
-        limit.unwrap_or(50),
+        limit.unwrap_or(0),
         &sort_type.unwrap_or("score".to_string()),
         &order.unwrap_or("desc".to_string()),
     )

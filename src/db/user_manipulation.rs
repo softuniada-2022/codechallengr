@@ -4,6 +4,7 @@ use crate::models::users::{Claim, LoginInformation, NewUser, RegistrationUser, U
 use crate::utils::establish_connection::establish_connection;
 use chrono;
 use diesel::prelude::*;
+use cain::cain;
 
 pub fn new_user(user: RegistrationUser) -> Result<User, UserError> {
     let conn = establish_connection();
@@ -103,27 +104,26 @@ pub fn delete_user(user: String) -> bool {
 
 pub fn get_num_users(limit: i32, sort_by: &str, order: &str) -> Vec<User> {
     let conn = establish_connection();
-    let mut query = users::table.into_boxed();
-    if sort_by == "name" {
-        query = match order {
-            "desc" => query.order(users::u_name.desc()),
-            "asc" => query.order(users::u_name.asc()),
-            _ => query.order(users::u_name.asc()),
-        }
-    } else if sort_by == "age" {
-        query = match order {
-            "desc" => query.order(users::u_created_at.desc()),
-            "asc" => query.order(users::u_created_at.asc()),
-            _ => query.order(users::u_created_at.asc()),
-        }
-    } else if sort_by == "score" {
-        query = match order {
-            "desc" => query.order(users::u_score.desc()),
-            "asc" => query.order(users::u_score.asc()),
-            _ => query.order(users::u_score.asc()),
-        }
-    } else {
-        query = query.order(users::u_score.asc());
+    let query = users::table.into_boxed();
+
+    cain! {
+        let col = match sort_by {
+            "name" => users::u_name,
+            "age" => users::u_created_at,
+            "score" => users::u_score,
+            _ => users::u_score,
+        };
+        let expr = match order {
+            "desc" => col.desc(),
+            "asc" => col.asc(),
+            _ => col.asc(),
+        };
+        let q = query.order(expr);
+        let q = if limit == 0 {
+            q
+        } else {
+            q.limit(limit as i64)
+        };
+        q.load::<User>(&conn).unwrap()
     }
-    query.limit(limit as i64).load::<User>(&conn).unwrap()
 }

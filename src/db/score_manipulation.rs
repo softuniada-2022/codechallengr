@@ -44,7 +44,7 @@ pub fn get_lim_scores(lim: i32) -> Vec<Score> {
         } else {
             scores.limit(lim as i64)
         };
-        let scores = scores.limit(lim as i64)
+        let scores = scores
             .load::<User>(&conn)
             .expect("Error loading users");
         scores.into_iter().map(|s| Score {
