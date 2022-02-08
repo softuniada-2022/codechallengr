@@ -34,4 +34,6 @@ WORKDIR /app
 COPY --from=builder /app/target/release/main /usr/local/bin
 COPY --from=vue_builder /app/vue/dist dist
 COPY --from=diesel /app/diesel /usr/local/bin
+COPY entry.sh .
+RUN chmod +x entry.sh
 ENTRYPOINT ["/app/entry.sh"]
