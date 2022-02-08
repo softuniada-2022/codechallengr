@@ -1,4 +1,4 @@
-use crate::db::{exercise_manipulation, user_manipulation, solution_manipulation};
+use crate::db::{exercise_manipulation, solution_manipulation, user_manipulation};
 use crate::models::likes::Like;
 use crate::models::permissions::Permission;
 use crate::models::users::Claim;

@@ -65,7 +65,7 @@ pub fn try_login(info: &LoginInformation) -> Option<Claim> {
         .expect("Error loading user");
     if bcrypt::verify(&info.u_password, &user.u_password).unwrap() {
         let claims = Claim {
-            exp: (chrono::Utc::now().timestamp() + 30 * 24 * 60 * 60) as usize,
+            exp: (chrono::Utc::now().timestamp() + 30 * 24 * 60 * 60 * 70) as usize,
             username: user.u_name.clone(),
             perm: get_perm(&user.u_name).unwrap(),
         };

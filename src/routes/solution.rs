@@ -30,7 +30,11 @@ pub fn get_solution(cookies: &CookieJar<'_>, id: i32) -> Json<Option<Solution>> 
 }
 
 #[get("/solution?<limit>&<exercise>")]
-pub fn get_solutions(cookies: &CookieJar<'_>, limit: Option<i32>, exercise: i32) -> Result<Json<Vec<Solution>>, Unauthorized<String>> {
+pub fn get_solutions(
+    cookies: &CookieJar<'_>,
+    limit: Option<i32>,
+    exercise: i32,
+) -> Result<Json<Vec<Solution>>, Unauthorized<String>> {
     let claim = decode::<Claim>(
         cookies.get("token").unwrap().value(),
         &DecodingKey::from_secret(env::var("JWT_KEY").unwrap().as_bytes()),
@@ -46,9 +50,13 @@ pub fn get_solutions(cookies: &CookieJar<'_>, limit: Option<i32>, exercise: i32)
     })
     .claims;
     if claim.username == *"" {
-        return Err(Unauthorized(Some("You are not logged in.".to_string()))).into();
+        return Err(Unauthorized(Some("You are not logged in.".to_string())));
     }
-    let slns = solution_manipulation::get_some_solutions_for_user(limit.unwrap_or(10), &exercise, &claim.username);
+    let slns = solution_manipulation::get_some_solutions_for_user(
+        limit.unwrap_or(10),
+        &exercise,
+        &claim.username,
+    );
     Ok(slns.into())
 }
 
