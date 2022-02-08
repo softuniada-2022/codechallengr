@@ -102,7 +102,7 @@ pub fn new_solution(
     if !happened {
         return Err(Custom(
             Status::InternalServerError,
-            "You already submitted a solution for this exercise.".to_string(),
+            "Something went wrong.".to_string(),
         ));
     }
     Ok(SolutionResult {
