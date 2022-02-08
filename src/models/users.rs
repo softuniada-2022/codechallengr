@@ -31,6 +31,7 @@ pub struct NewUser {
     pub u_name: String,
     pub u_email: String,
     pub u_password: String,
+    pub u_score: i32,
     pub u_permission: Permission,
     pub u_created_at: NaiveDateTime,
     pub u_updated_at: NaiveDateTime,
@@ -62,6 +63,7 @@ impl From<RegistrationUser> for NewUser {
             u_email: a.u_email,
             u_password: bcrypt::hash(&a.u_password, bcrypt::DEFAULT_COST)
                 .expect("Something happened while hashing"),
+            u_score: 0,
             u_permission: Permission::AuthAuthor,
             u_created_at: chrono::Utc::now().naive_utc(),
             u_updated_at: chrono::Utc::now().naive_utc(),
