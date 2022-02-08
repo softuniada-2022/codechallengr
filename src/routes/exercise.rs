@@ -110,8 +110,7 @@ pub fn create_exercise(
             ex_created_at: chrono::Utc::now().naive_utc(),
             ex_updated_at: chrono::Utc::now().naive_utc(),
         };
-        exercise_manipulation::new_exercise(&exercise);
-        Ok(Exercise::from(exercise).into())
+        Ok(exercise_manipulation::new_exercise(&exercise).unwrap().into())
     } else {
         Err(Unauthorized(Some(
             "You do not have permission to create challenges".to_string(),

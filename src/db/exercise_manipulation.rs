@@ -5,16 +5,20 @@ use crate::utils::establish_connection::establish_connection;
 use cain::cain;
 use diesel::prelude::*;
 
-pub fn new_exercise(exercise: &NewExercise) -> bool {
+pub fn new_exercise(exercise: &NewExercise) -> Option<Exercise> {
     let conn = establish_connection();
     let affected = diesel::insert_into(exercises::table)
         .values(exercise)
         .execute(&conn)
         .ok();
     match affected {
-        Some(1) => true,
-        Some(0) => false,
-        _ => false,
+        Some(1) => exercises::table
+        .filter(exercises::ex_name.eq(&exercise.ex_name))
+        .select(exercises::all_columns)
+        .first::<Exercise>(&conn)
+        .ok(),
+        Some(0) => None,
+        _ => None,
     }
 }
 
