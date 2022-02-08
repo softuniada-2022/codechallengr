@@ -37,7 +37,6 @@ pub struct CreateSolution {
 
 #[derive(Deserialize, Serialize)]
 pub struct SolutionResult {
-    pub happened: bool,
     pub s_correct: bool,
     pub prev_scored_up: bool,
 }

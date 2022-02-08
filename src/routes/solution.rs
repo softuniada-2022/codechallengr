@@ -99,8 +99,13 @@ pub fn new_solution(
         s_correct: correct,
         s_submitted_at: chrono::Utc::now().naive_utc(),
     });
+    if !happened {
+        return Err(Custom(
+            Status::InternalServerError,
+            "You already submitted a solution for this exercise.".to_string(),
+        ));
+    }
     Ok(SolutionResult {
-        happened,
         prev_scored_up,
         s_correct: correct,
     }
