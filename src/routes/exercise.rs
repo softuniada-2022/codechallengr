@@ -189,10 +189,9 @@ pub fn update_exercise(
 }
 
 #[get("/exercise/<id>/input")]
-pub fn get_input(id: String) -> Json<String> {
+pub fn get_input(id: String) -> String {
     exercise_manipulation::get_input(id.parse::<i32>().unwrap())
         .unwrap()
-        .into()
 }
 
 #[post("/exercise/<id>/like")]

@@ -114,6 +114,10 @@ async function solve() {
 </template>
 
 <style scoped>
+
+.exercise-description {
+  white-space: pre-wrap;
+}
 .exercise-title {
   font-weight: bold;
   font-size: 1.1em;
