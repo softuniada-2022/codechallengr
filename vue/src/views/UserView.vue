@@ -19,6 +19,8 @@ const { data: user, error } = useUser(username);
         <dd>{{ user.u_name }}</dd>
         <dt>Email</dt>
         <dd>{{ user.u_email }}</dd>
+        <dt>Permission</dt>
+        <dd>{{ user.u_permission }}</dd>
         <dt>Score</dt>
         <dd>{{ user.u_score }}</dd>
         <dt>Created</dt>

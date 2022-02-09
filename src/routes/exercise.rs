@@ -8,8 +8,8 @@ use crate::utils::verify_permission;
 use dotenv::dotenv;
 use jwt::TokenData;
 use jwt::{decode, DecodingKey, Validation};
-use rocket::http::CookieJar;
-use rocket::response::status::{Accepted, Unauthorized};
+use rocket::http::{CookieJar, Status};
+use rocket::response::status::{Accepted, Unauthorized, Custom};
 use rocket::serde::json::Json;
 use std::env;
 
@@ -199,7 +199,7 @@ pub fn get_input(id: String) -> Json<String> {
 pub fn like_exercise(
     cookies: &CookieJar<'_>,
     id: i32,
-) -> Result<Accepted<String>, Unauthorized<String>> {
+) -> Result<Accepted<String>, Custom<String>> {
     let guest_claim = TokenData {
         header: Default::default(),
         claims: Claim {
@@ -214,16 +214,18 @@ pub fn like_exercise(
         ), &Validation::default()).unwrap_or(guest_claim),
         None => guest_claim,
     }.claims;
+    println!("{} {}", claim.username, id);
+    if claim.username == "" {
+        return Err(Custom(Status::Forbidden, "You must be logged in to like challenges".to_string()));
+    }
     if verify_permission::verify_like_owner(&claim, id) {
-        return Err(Unauthorized(Some(
-            "You have already liked this challenge".to_string(),
-        )));
+        return Err(Custom(Status::Unauthorized, "You have already liked this challenge".to_string()));
     }
     // if verify_permission::verify_like_owner(&claim, id) {
-    exercise_manipulation::like_exercise(Like {
+    println!("{}", exercise_manipulation::like_exercise(Like {
         u_id: claim.username,
         ex_id: id,
-    });
+    }));
     Ok(Accepted(Some("You liked this exercise".to_string())))
     // }
 }

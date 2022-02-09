@@ -68,6 +68,7 @@ pub fn like_exercise(like: Like) -> bool {
         .values(&like)
         .execute(&conn)
         .ok();
+        let _a = inc_exercise_likes(like.ex_id);
     match affected {
         Some(1) => true,
         Some(0) => false,

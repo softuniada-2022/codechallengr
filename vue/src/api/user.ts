@@ -33,6 +33,15 @@ export async function signUp(
   logInAfterSignUp = true
 ): Promise<void> {
   const url = "/api/user";
+  if (password === "") {
+    throw Error("Password cannot be empty");
+  }
+  if (email === "") {
+    throw Error("Email cannot be empty");
+  }
+  if (username === "") {
+    throw Error("Username cannot be empty");
+  }
   const body = JSON.stringify({
     u_name: username,
     u_email: email,

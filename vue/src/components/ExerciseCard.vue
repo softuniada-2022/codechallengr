@@ -30,7 +30,9 @@ const solution = ref("");
 
 async function toggleLike() {
   if (!loginClaim.value) return;
-  if (exercise.value.ex_liked_by_me) {
+  let a = JSON.parse(JSON.stringify(exercise.value));
+  // console.log(exercise.value.Target.ex_liked_by_me);
+  if (a.liked_by_me) {
     await unlikeExercise(exercise.value);
   } else {
     await likeExercise(exercise.value);
@@ -53,11 +55,11 @@ async function solve() {
         {{ exercise.ex_name }}
       </slot>
     </header>
-    <p class="exercise-description">
+    <span class="exercise-description">
       <slot name="description" :description="exercise.ex_description">
         {{ exercise.ex_description }}
       </slot>
-    </p>
+    </span>
     <h3 v-if="!standalone && exercise.ex_solved_by_me" class="--solved">
       Solved
     </h3>
@@ -66,6 +68,7 @@ async function solve() {
         @submit.prevent="solve"
         v-if="!exercise.ex_solved_by_me && loginClaim"
       >
+      <!-- button to redirect to the /api/id/input endpoint -->
         <label for="solution">Solution: </label>
         <!-- eslint-disable-next-line prettier/prettier -->
         <input id="solution" type="text" v-model="solution" /> <input type="submit" value="Solve" />
@@ -76,6 +79,12 @@ async function solve() {
         <RouterLink to="/login">logged in</RouterLink>
         to solve exercises
       </p>
+      <RouterLink
+        class="button"
+        :to="`/api/exercise/${exercise.ex_id}/input`"
+        > Get your input
+        
+        </RouterLink>
       <details v-if="loginClaim">
         <summary>Your solutions</summary>
         <ul v-if="solutions">
@@ -89,14 +98,15 @@ async function solve() {
     </template>
     <hr />
     <footer class="exercise-footer">
-      <!-- <a
+      <a
+        id="likeUnlike"
         class="exercise-likes"
         :class="exercise.ex_liked_by_me && '--liked'"
         @mouseover="() => prefetchExercise(exercise.ex_id)"
         @click="toggleLike"
       >
         {{ exercise.ex_likes }}
-      </a> -->
+      </a>
       <!-- eslint-disable-next-line prettier/prettier -->
       <span class="exercise-difficulty">Difficulty: {{ exercise.ex_difficulty }}</span>
     </footer>
