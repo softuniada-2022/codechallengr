@@ -51,40 +51,34 @@ async function solve() {
 <template>
   <div class="exercise-card">
     <header class="exercise-title">
-      <slot name="title" :title="exercise.ex_name">
-        {{ exercise.ex_name }}
-      </slot>
+      <slot name="title" :title="exercise.ex_name">{{ exercise.ex_name }}</slot>
     </header>
     <span class="exercise-description">
-      <slot name="description" :description="exercise.ex_description">
-        {{ exercise.ex_description }}
-      </slot>
+      <slot name="description" :description="exercise.ex_description">{{ exercise.ex_description }}</slot>
     </span>
-    <h3 v-if="!standalone && exercise.ex_solved_by_me" class="--solved">
-      Solved
-    </h3>
+    <h3 v-if="!standalone && exercise.ex_solved_by_me" class="--solved">Solved</h3>
     <template v-if="standalone">
-      <form
-        @submit.prevent="solve"
-        v-if="!exercise.ex_solved_by_me && loginClaim"
-      >
-      <!-- button to redirect to the /api/id/input endpoint -->
-        <label for="solution">Solution: </label>
+      <form @submit.prevent="solve" v-if="!exercise.ex_solved_by_me && loginClaim">
+        <!-- button to redirect to the /api/id/input endpoint -->
+        <label for="solution">Solution:</label>
         <!-- eslint-disable-next-line prettier/prettier -->
-        <input id="solution" type="text" v-model="solution" /> <input type="submit" value="Solve" />
+        <input id="solution" type="text" v-model="solution" />
+        <input type="submit" value="Solve" />
       </form>
       <h3 v-if="exercise.ex_solved_by_me" class="--solved">Solved!</h3>
       <p v-if="!loginClaim" class="exercise-not-logged-in">
         You need to be
-        <RouterLink to="/login">logged in</RouterLink>
-        to solve exercises
+        <RouterLink to="/login">logged in</RouterLink>to solve exercises
       </p>
-      <RouterLink
+      <!-- <RouterLink
         class="button"
         :to="`/api/exercise/${exercise.ex_id}/input`"
         > Get your input
         
-        </RouterLink>
+      </RouterLink>-->
+
+      <a class="button" :href="`/api/exercise/${exercise.ex_id}/input`">Get your input</a>
+
       <details v-if="loginClaim">
         <summary>Your solutions</summary>
         <ul v-if="solutions">
@@ -104,9 +98,7 @@ async function solve() {
         :class="exercise.ex_liked_by_me && '--liked'"
         @mouseover="() => prefetchExercise(exercise.ex_id)"
         @click="toggleLike"
-      >
-        {{ exercise.ex_likes }}
-      </a>
+      >{{ exercise.ex_likes }}</a>
       <!-- eslint-disable-next-line prettier/prettier -->
       <span class="exercise-difficulty">Difficulty: {{ exercise.ex_difficulty }}</span>
     </footer>
@@ -114,7 +106,6 @@ async function solve() {
 </template>
 
 <style scoped>
-
 .exercise-description {
   white-space: pre-wrap;
 }
