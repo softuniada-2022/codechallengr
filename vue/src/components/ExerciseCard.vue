@@ -27,12 +27,10 @@ const { data: loginClaim } = useLogin();
 const { data: solutions } = useSolutions(exercise.value.ex_id);
 
 const solution = ref("");
-
+2
 async function toggleLike() {
   if (!loginClaim.value) return;
-  let a = JSON.parse(JSON.stringify(exercise.value));
-  // console.log(exercise.value.Target.ex_liked_by_me);
-  if (a.liked_by_me) {
+  if (exercise.value.liked_by_me) {
     await unlikeExercise(exercise.value);
   } else {
     await likeExercise(exercise.value);
@@ -56,16 +54,16 @@ async function solve() {
     <span class="exercise-description">
       <slot name="description" :description="exercise.ex_description">{{ exercise.ex_description }}</slot>
     </span>
-    <h3 v-if="!standalone && exercise.ex_solved_by_me" class="--solved">Solved</h3>
+    <h3 v-if="!standalone && exercise.solved_by_me" class="--solved">Solved</h3>
     <template v-if="standalone">
-      <form @submit.prevent="solve" v-if="!exercise.ex_solved_by_me && loginClaim">
+      <form @submit.prevent="solve" v-if="!exercise.solved_by_me && loginClaim">
         <!-- button to redirect to the /api/id/input endpoint -->
         <label for="solution">Solution:</label>
         <!-- eslint-disable-next-line prettier/prettier -->
         <input id="solution" type="text" v-model="solution" />
         <input type="submit" value="Solve" />
       </form>
-      <h3 v-if="exercise.ex_solved_by_me" class="--solved">Solved!</h3>
+      <h3 v-if="exercise.solved_by_me" class="--solved">Solved!</h3>
       <p v-if="!loginClaim" class="exercise-not-logged-in">
         You need to be
         <RouterLink to="/login">logged in</RouterLink>to solve exercises
@@ -95,7 +93,7 @@ async function solve() {
       <a
         id="likeUnlike"
         class="exercise-likes"
-        :class="exercise.ex_liked_by_me && '--liked'"
+        :class="exercise.liked_by_me && '--liked'"
         @mouseover="() => prefetchExercise(exercise.ex_id)"
         @click="toggleLike"
       >{{ exercise.ex_likes }}</a>

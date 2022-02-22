@@ -3,10 +3,9 @@ import useSWRV, { mutate } from "swrv";
 
 export function prefetchScores() {
   const url = "/api/score";
-  mutate(
-    url,
-    fetch(url).then((r) => r.json())
-  );
+  const dataPromise = fetch(url).then((res) => res.json());
+  mutate(url, dataPromise);
+  return dataPromise;
 }
 
 export function useScores() {

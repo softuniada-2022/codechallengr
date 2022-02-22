@@ -4,10 +4,9 @@ import useSWRV, { mutate } from "swrv";
 
 export function prefetchSolutions(exerciseId: number) {
   const url = `/api/solution?exercise=${exerciseId}`;
-  mutate(
-    url,
-    fetch(url).then((r) => r.json())
-  );
+  const dataPromise = fetch(url).then((res) => res.json());
+  mutate(url, dataPromise);
+  return dataPromise;
 }
 
 export function useSolutions(exerciseId: number) {

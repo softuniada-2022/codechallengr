@@ -4,15 +4,18 @@ import { logIn } from "@/api/login";
 
 export function prefetchUsers() {
   const url = "/api/user";
-  mutate(
-    url,
-    fetch(url).then((r) => r.json())
-  );
+  const dataPromise = fetch(url).then((res) => res.json());
+  mutate(url, dataPromise);
+  return dataPromise;
 }
 
 export function prefetchUser(username: string, data?: User) {
   const url = `/api/user/${username}`;
-  mutate(url, data ?? fetch(url).then((r) => r.json()));
+  const dataPromise = data
+    ? Promise.resolve(data)
+    : fetch(url).then((res) => res.json());
+  mutate(url, data ?? dataPromise);
+  return dataPromise;
 }
 
 export function useUsers() {

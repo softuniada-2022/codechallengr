@@ -5,15 +5,18 @@ import { prefetchSolutions } from "./solution";
 
 export function prefetchExercises() {
   const url = "/api/exercise";
-  mutate(
-    url,
-    fetch(url).then((r) => r.json())
-  );
+  const dataPromise = fetch(url).then((res) => res.json());
+  mutate(url, dataPromise);
+  return dataPromise;
 }
 
 export function prefetchExercise(id: number, data?: Exercise) {
   const url = `/api/exercise/${id}`;
-  mutate(url, data ?? fetch(url).then((r) => r.json()));
+  const dataPromise = data
+    ? Promise.resolve(data)
+    : fetch(url).then((r) => r.json());
+  mutate(url, dataPromise);
+  return dataPromise;
 }
 
 export function useExercises() {
@@ -35,11 +38,15 @@ export function likeExercise(exercise: Exercise): Promise<void> {
   const resp = fetch(url, { method: "POST" });
   prefetchExercise(exercise.ex_id, {
     ...exercise,
-    ex_liked_by_me: true,
+    liked_by_me: true,
     ex_likes: exercise.ex_likes + 1,
   });
-  prefetchExercise(exercise.ex_id);
-  return resp.then(() => undefined);
+  // prefetchExercise(exercise.ex_id);
+  // prefetchExercises();
+  return resp
+    .then(() => prefetchExercise(exercise.ex_id))
+    .then(() => prefetchExercises())
+    .then(() => undefined);
 }
 
 export function unlikeExercise(exercise: Exercise) {
@@ -47,11 +54,15 @@ export function unlikeExercise(exercise: Exercise) {
   const resp = fetch(url, { method: "POST" });
   prefetchExercise(exercise.ex_id, {
     ...exercise,
-    ex_liked_by_me: false,
+    liked_by_me: false,
     ex_likes: exercise.ex_likes - 1,
   });
-  prefetchExercise(exercise.ex_id);
-  return resp.then(() => undefined);
+  // prefetchExercise(exercise.ex_id);
+  // prefetchExercises();
+  return resp
+    .then(() => prefetchExercise(exercise.ex_id))
+    .then(() => prefetchExercises())
+    .then(() => undefined);
 }
 
 export async function createExercise(

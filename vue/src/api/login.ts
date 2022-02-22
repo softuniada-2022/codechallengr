@@ -6,24 +6,24 @@ import { prefetchUsers } from "./user";
 
 export function prefetchLogin(claim?: Claim) {
   const url = "/api/login";
-  mutate(
-    url,
-    claim ??
-      fetch(url).then(async (r) => {
+  const claimPromise = claim
+    ? Promise.resolve(claim)
+    : fetch(url).then(async (r) => {
         const token = await r.text();
         const claim = jose.decodeJwt(token) as unknown as Claim;
         if (claim.exp < Date.now() / 1000) {
           throw new Error("Token expired");
         }
         return claim;
-      })
-  );
+      });
+  mutate(url, claimPromise);
+  return claimPromise;
 }
 
 export async function renewLogin() {
   const url = "/api/login?renew";
   const token = await fetch(url).then((r) => r.text());
-  prefetchLogin(jose.decodeJwt(token) as unknown as Claim);
+  await prefetchLogin(jose.decodeJwt(token) as unknown as Claim);
 }
 
 export function useLogin() {
